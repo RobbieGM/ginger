@@ -1,10 +1,40 @@
-import React from 'react';
-import style from './App.module.scss';
+import React, { useState } from 'react';
+import classes from './App.module.scss';
+import BottomNavigation, { Tab } from './BottomNavigation';
+import { BookOpen, TrendingUp, Award, Bookmark } from 'react-feather';
+import SavedTab from './SavedTab';
 
-const App: React.FC = () => {
+const tabs: Tab[] = [
+  {
+    label: 'Saved',
+    icon: Bookmark,
+    component: <SavedTab />
+  },
+  {
+    label: 'My Recipes',
+    icon: BookOpen,
+    component: <SavedTab />
+  },
+  {
+    label: 'Popular',
+    icon: TrendingUp,
+    component: <SavedTab />
+  },
+  {
+    label: 'New',
+    icon: Award,
+    component: <SavedTab />
+  }
+];
+
+interface Props {}
+
+const App: React.FC<Props> = props => {
+  const [tab, setTab] = useState(0);
   return (
-    <div className={style.app} id='app'>
-      Welcome to Ginger
+    <div className={classes.app} id='app'>
+      {tabs[tab].component}
+      <BottomNavigation tabs={tabs} selectedTabIndex={tab} setTab={setTab} />
     </div>
   );
 };

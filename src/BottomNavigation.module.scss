@@ -1,0 +1,35 @@
+@import './variables.scss';
+
+.bottomNavigation {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font: 0.8em 'Lexend Deca';
+  background: rgba(white, 0.8);
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  .tab {
+    cursor: pointer;
+    flex-basis: 120px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .label {
+      white-space: nowrap;
+    }
+    &.selected {
+      svg.icon {
+        stroke: $green;
+      }
+      .label {
+        color: $green;
+      }
+    }
+  }
+}

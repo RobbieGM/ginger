@@ -1,20 +1,21 @@
-@import url('https://fonts.googleapis.com/css?family=PT+Serif:400,700|Poppins&display=swap');
-
-$background: #f7f2d9;
-$ginger: #d5b083;
+@import url('https://fonts.googleapis.com/css?family=PT+Serif:400,700|Lexend+Deca&display=swap');
+@import '_variables';
 
 body {
   background-color: $background;
-  background-image: url('assets/background-noise.svg');
+  // background-image: url('assets/background-noise.svg');
+  color: $text;
   margin: 0;
   font-family: 'PT Serif', Georgia, 'Times New Roman', Times, serif;
+  background-color: $background;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Poppins';
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  user-select: none;
 }
