@@ -14,7 +14,7 @@
   user-select: none;
   .tab {
     cursor: pointer;
-    flex-basis: 120px;
+    flex-basis: 100px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -30,6 +30,15 @@
       .label {
         color: $green;
       }
+    }
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .bottomNavigation {
+    justify-content: space-around;
+    .tab {
+      flex-basis: unset;
     }
   }
 }

@@ -1,9 +1,5 @@
 @import '/_variables';
 
-.recipeList {
-  margin: 36px;
-}
-
 .recipeCardContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

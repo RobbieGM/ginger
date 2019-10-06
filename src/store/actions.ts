@@ -18,7 +18,9 @@ function createAction<T extends string, P>(type: T, payload?: P) {
 }
 
 export const createRecipe = (recipe: Recipe) =>
-  createAction('ADD_RECIPE', recipe);
+  createAction('CREATE_RECIPE', recipe);
+export const mergeRecipes = (...recipes: Recipe[]) =>
+  createAction('MERGE_RECIPES', recipes);
 export const deleteRecipe = (id: string) => createAction('DELETE_RECIPE', id);
 export const bookmarkRecipe = (id: string) =>
   createAction('BOOKMARK_RECIPE', id);
@@ -27,7 +29,8 @@ export const unbookmarkRecipe = (id: string) =>
 
 export type RecipeAction =
   | ReturnType<typeof createRecipe>
-  | ReturnType<typeof deleteRecipe>;
+  | ReturnType<typeof deleteRecipe>
+  | ReturnType<typeof mergeRecipes>;
 export type BookmarkAction =
   | ReturnType<typeof bookmarkRecipe>
   | ReturnType<typeof unbookmarkRecipe>;

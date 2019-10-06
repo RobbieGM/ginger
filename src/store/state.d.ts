@@ -27,7 +27,7 @@ export interface Recipe {
   ingredients: string[];
   directions: string;
   imageURL?: string;
-  lastModified?: number;
+  lastModified: number;
 }
 
 export default interface AppState {

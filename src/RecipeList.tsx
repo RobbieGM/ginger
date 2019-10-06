@@ -4,7 +4,8 @@ import AppState, { Recipe } from './store/state';
 import { Bookmark, Star, Clock } from 'react-feather';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from './store/store';
-import { createRecipe } from './store/actions';
+import { bookmarkRecipe, unbookmarkRecipe } from './store/actions';
+import classNames from 'classnames';
 
 const RECIPES_TO_LOAD_AT_ONCE = 2;
 
@@ -55,6 +56,12 @@ const RecipeList: React.FC<Props> = props => {
   const recipes = recipeIds.map(
     getRecipeById(useSelector((state: AppState) => state.recipes))
   );
+  const toggleBookmark = (recipe: Recipe) =>
+    dispatch(
+      recipe.bookmarkDate
+        ? unbookmarkRecipe(recipe.id)
+        : bookmarkRecipe(recipe.id)
+    );
 
   useEffect(() => {
     loadMoreRecipes();
@@ -62,13 +69,7 @@ const RecipeList: React.FC<Props> = props => {
   }, []);
 
   return (
-    <div className={classes.recipeList}>
-      <h1>
-        {props.title}
-        <button onClick={() => dispatch(createRecipe(recipes[0]))}>
-          add first recipe to storage
-        </button>
-      </h1>
+    <>
       <div className={classes.recipeCardContainer}>
         {recipes.map(recipe => (
           <div
@@ -76,7 +77,12 @@ const RecipeList: React.FC<Props> = props => {
             key={recipe.id}
             style={{ backgroundImage: `url(${recipe.imageURL})` }}
           >
-            <div className={classes.bookmarkIcon}>
+            <div
+              className={classNames(classes.bookmarkIcon, {
+                [classes.bookmarked]: recipe.bookmarkDate
+              })}
+              onClick={() => toggleBookmark(recipe)}
+            >
               <Bookmark />
             </div>
             <div className={classes.bottomContent}>
@@ -96,7 +102,7 @@ const RecipeList: React.FC<Props> = props => {
         ))}
       </div>
       <button onClick={loadMoreRecipes}>Load more</button>
-    </div>
+    </>
   );
 };
 

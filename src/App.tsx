@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classes from './App.module.scss';
 import BottomNavigation, { Tab } from './BottomNavigation';
-import { BookOpen, TrendingUp, Award, Bookmark } from 'react-feather';
+import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
 import SavedTab from './SavedTab';
 
 const tabs: Tab[] = [
@@ -23,6 +23,11 @@ const tabs: Tab[] = [
   {
     label: 'New',
     icon: Award,
+    component: <SavedTab />
+  },
+  {
+    label: 'Search',
+    icon: Search,
     component: <SavedTab />
   }
 ];
