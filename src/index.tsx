@@ -1,18 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
-import { store, storePersistor } from './store/store';
 import { PersistGate } from 'redux-persist/integration/react';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+import { store, storePersistor } from './store/store';
+import * as serviceWorker from './serviceWorker';
+import App from './App';
+
+const tester = document.getElementById('h')?.nonce;
+
+const apolloClient = new ApolloClient({
+  uri: `${window.location.protocol}//${window.location.hostname}${
+    process.env.NODE_ENV === 'development' ? ':5000' : ''
+  }/graphql`
+});
 
 ReactDOM.render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={storePersistor}>
-      <App />
-    </PersistGate>
-  </Provider>,
+  <ApolloProvider client={apolloClient}>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={storePersistor}>
+        <App />
+      </PersistGate>
+    </Provider>
+  </ApolloProvider>,
   document.getElementById('root')
 );
 

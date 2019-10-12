@@ -1,4 +1,5 @@
-import * as reducers from './reducers';
+import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer, createTransform } from 'redux-persist';
 import {
   createStore,
   combineReducers,
@@ -6,10 +7,9 @@ import {
   Store,
   AnyAction
 } from 'redux';
+import * as reducers from './reducers';
 import AppState, { Recipe } from './state';
 import { AppAction } from './actions';
-import { persistStore, persistReducer, createTransform } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 // import createCompressor from 'redux-persist-transform-compress';
 
 declare global {
@@ -41,6 +41,7 @@ export const store = createStore(
     },
     rootReducer
   ),
+  // eslint-disable-next-line no-underscore-dangle
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 

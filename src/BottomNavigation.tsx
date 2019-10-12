@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from 'react-feather';
-import classes from './BottomNavigation.module.scss';
 import classNames from 'classnames';
+import classes from './BottomNavigation.module.scss';
 
 export interface Tab {
   label: string;
@@ -15,19 +15,23 @@ interface Props {
   selectedTabIndex: number;
 }
 
-const BottomNavigation: React.FC<Props> = props => (
+const BottomNavigation: React.FC<Props> = ({
+  tabs,
+  setTab,
+  selectedTabIndex
+}) => (
   <nav className={classes.bottomNavigation}>
-    {props.tabs.map((tab, index) => (
-      <div
+    {tabs.map((tab, index) => (
+      <button
         className={classNames(classes.tab, {
-          [classes.selected]: index === props.selectedTabIndex
+          [classes.selected]: index === selectedTabIndex
         })}
         key={tab.label}
-        onClick={() => props.setTab(index)}
+        onClick={() => setTab(index)}
       >
         <tab.icon className={classes.icon} />
         <div className={classes.label}>{tab.label}</div>
-      </div>
+      </button>
     ))}
   </nav>
 );

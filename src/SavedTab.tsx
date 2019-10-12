@@ -1,7 +1,7 @@
 import React, { useState, Dispatch } from 'react';
+import { useDispatch } from 'react-redux';
 import RecipeList from './RecipeList';
 import { Recipe } from './store/state';
-import { useDispatch } from 'react-redux';
 import { AppAction, mergeRecipes } from './store/actions';
 import classes from './Tab.module.scss';
 
@@ -76,7 +76,7 @@ const SavedTab: React.FC = () => {
   return (
     <div className={classes.tab}>
       <h1>Saved</h1>
-      <RecipeList title='Saved' getRecipeIds={recipeGenerator} />
+      <RecipeList getRecipeIds={recipeGenerator} />
     </div>
   );
 };

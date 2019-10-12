@@ -5,39 +5,43 @@ import {
   Arg,
   FieldResolver,
   Root,
-  Mutation
+  Mutation,
+  Authorized,
+  Ctx
 } from 'type-graphql';
+import { InjectManager } from 'typeorm-typedi-extensions';
+import { Service } from 'typedi';
+import { EntityManager } from 'typeorm';
 import { Recipe } from '../data-types/Recipe';
 import { RecipeInput } from '../api-input/RecipeInput';
-import { Service } from 'typedi';
-import { RecipeRepository } from '../repositories/RecipeRepository';
-import { InjectRepository } from 'typeorm-typedi-extensions';
+import { Context } from '../Context';
+import { User } from '../data-types/User';
+import { Bookmark } from '../data-types/Bookmark';
 
 @Service()
 @Resolver(of => Recipe)
 export class RecipeResolver implements ResolverInterface<Recipe> {
-  constructor(
-    @InjectRepository() private readonly repository: RecipeRepository
-  ) {}
-  // @Query(returns => Recipe)
-  // async dumbRecipe(): Promise<Recipe> {
-  //   return {
-  //     id: '293f8',
-  //     name: 'nothing',
-  //     ratings: [],
-  //     prepTime: 0,
-  //     cookTime: 2,
-  //     ingredients: [],
-  //     directions: 'put on the grill until it burns',
-  //     lastModified: new Date(),
-  //   };
-  // }
+  @InjectManager() private readonly manager: EntityManager;
 
   @Query(returns => Recipe)
-  async recipe(@Arg('id') id: string) {
-    return await this.repository.findOne({ id });
+  recipe(@Arg('id') id: string) {
+    return this.manager.findOne(Recipe, { id });
   }
 
+  @Authorized()
+  @Query(returns => [Recipe])
+  async myRecipes(@Ctx() context: Context) {
+    const user = await this.manager.findOneOrFail(User, {
+      where: {
+        id: context.userId
+      },
+      relations: ['recipes']
+    });
+    console.log('user', user);
+    return user.recipes;
+  }
+
+  @Authorized()
   @Mutation(returns => [Recipe])
   async mergeRecipes(
     @Arg('recipes', type => [RecipeInput]) recipes: RecipeInput[]
@@ -46,8 +50,10 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     const updatedRecipesForServer: Recipe[] = [];
     const existingIdsForServer: string[] = []; // If an id from recipes isn't found in this array, it is new for the server
 
-    const conflictingRecipes = await this.repository.find({
-      where: { id: recipes.map(r => r.id) }
+    const conflictingRecipes = await this.manager.find(Recipe, {
+      where: {
+        id: recipes.map(r => r.id)
+      }
     });
     conflictingRecipes.forEach(serverRecipe => {
       existingIdsForServer.push(serverRecipe.id);
@@ -78,5 +84,33 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
     const ratingsSum = ratings.reduce((a, b) => a + b.value, 0);
     return ratingsSum / ratings.length;
+  }
+
+  @Authorized()
+  @FieldResolver()
+  async bookmarkDate(
+    @Root() recipe: Recipe,
+    @Ctx() context: Context
+  ): Promise<Date | undefined> {
+    const bookmark = await this.manager.findOne(Bookmark, {
+      where: {
+        user: {
+          id: context.userId
+        },
+        recipe: {
+          id: recipe.id
+        }
+      }
+    });
+    return bookmark?.date;
+  }
+
+  @Authorized()
+  @FieldResolver()
+  userRating(
+    @Root() recipe: Recipe,
+    @Ctx() context: Context
+  ): number | undefined {
+    return undefined;
   }
 }

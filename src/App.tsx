@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
 import classes from './App.module.scss';
 import BottomNavigation, { Tab } from './BottomNavigation';
-import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
 import SavedTab from './SavedTab';
 
 const tabs: Tab[] = [
@@ -32,9 +32,9 @@ const tabs: Tab[] = [
   }
 ];
 
-interface Props {}
+// interface Props {}
 
-const App: React.FC<Props> = props => {
+const App: React.FC<{}> = () => {
   const [tab, setTab] = useState(0);
   return (
     <div className={classes.app} id='app'>

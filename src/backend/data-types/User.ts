@@ -1,6 +1,6 @@
 import { ObjectType, Field } from 'type-graphql';
 import { Recipe } from './Recipe';
-import { OneToMany, Entity, Column, PrimaryColumn } from 'typeorm';
+import { OneToMany, Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Bookmark } from './Bookmark';
 import { Rating } from './Rating';
 
@@ -8,7 +8,7 @@ import { Rating } from './Rating';
 @Entity()
 export class User {
   @Field()
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Field(type => [Recipe])

@@ -1,4 +1,12 @@
-import { ObjectType, Field, ID, Float, Int, Arg } from 'type-graphql';
+import {
+  ObjectType,
+  Field,
+  ID,
+  Float,
+  Int,
+  Arg,
+  Authorized
+} from 'type-graphql';
 import { Rating } from './Rating';
 import {
   Entity,
@@ -22,7 +30,7 @@ export class Recipe {
   @Column()
   name: string;
 
-  @Field()
+  @Field(type => User)
   @ManyToOne(type => User, user => user.recipes)
   user: User;
 
@@ -33,9 +41,11 @@ export class Recipe {
   @OneToMany(type => Rating, rating => rating.recipe)
   ratings: Rating[];
 
+  @Authorized()
   @Field(type => Int)
   userRating?: number;
 
+  @Authorized()
   @Field()
   bookmarkDate?: Date;
 

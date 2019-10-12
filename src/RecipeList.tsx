@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import classNames from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
+import { Bookmark, Star, Clock } from 'react-feather';
 import classes from './RecipeList.module.scss';
 import AppState, { Recipe } from './store/state';
-import { Bookmark, Star, Clock } from 'react-feather';
-import { useDispatch, useSelector } from 'react-redux';
 import { store } from './store/store';
 import { bookmarkRecipe, unbookmarkRecipe } from './store/actions';
-import classNames from 'classnames';
 
 const RECIPES_TO_LOAD_AT_ONCE = 2;
 
@@ -17,6 +17,7 @@ function useInfiniteScroll<T>(
   async function loadMore() {
     const nextItems: T[] = [];
     for (let i = 0; i < itemsToLoadAtOnce; i++) {
+      // eslint-disable-next-line no-await-in-loop
       const { done, value } = await generator.next();
       if (!done) {
         nextItems.push(value);
@@ -32,7 +33,6 @@ function useInfiniteScroll<T>(
 }
 
 interface Props {
-  title: string;
   getRecipeIds: AsyncGenerator<string, void>;
 }
 
@@ -47,9 +47,9 @@ const getRecipeById = (recipes: Recipe[]) => (id: string) => {
   return found;
 };
 
-const RecipeList: React.FC<Props> = props => {
+const RecipeList: React.FC<Props> = ({ getRecipeIds }) => {
   const [recipeIds, loadMoreRecipes] = useInfiniteScroll(
-    props.getRecipeIds,
+    getRecipeIds,
     RECIPES_TO_LOAD_AT_ONCE
   );
   const dispatch = useDispatch<typeof store.dispatch>();
@@ -77,14 +77,14 @@ const RecipeList: React.FC<Props> = props => {
             key={recipe.id}
             style={{ backgroundImage: `url(${recipe.imageURL})` }}
           >
-            <div
+            <button
               className={classNames(classes.bookmarkIcon, {
                 [classes.bookmarked]: recipe.bookmarkDate
               })}
               onClick={() => toggleBookmark(recipe)}
             >
               <Bookmark />
-            </div>
+            </button>
             <div className={classes.bottomContent}>
               <h3>{recipe.name}</h3>
               <div className={classes.recipeMetadata}>
