@@ -17,8 +17,7 @@ export class UserResolver /* implements ResolverInterface<User> */ {
 
   @Mutation(returns => String)
   async createAccount() {
-    // const newUser = await this.manager.save(this.manager.create(User));
-    // return newUser.id;
-    return 'test';
+    const newUser = await this.manager.save(this.manager.create(User));
+    return newUser.id;
   }
 }

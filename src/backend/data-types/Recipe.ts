@@ -1,13 +1,4 @@
-import {
-  ObjectType,
-  Field,
-  ID,
-  Float,
-  Int,
-  Arg,
-  Authorized
-} from 'type-graphql';
-import { Rating } from './Rating';
+import { ObjectType, Field, ID, Float, Int, Authorized } from 'type-graphql';
 import {
   Entity,
   Column,
@@ -16,6 +7,7 @@ import {
   UpdateDateColumn,
   ManyToOne
 } from 'typeorm';
+import { Rating } from './Rating';
 import { Bookmark } from './Bookmark';
 import { User } from './User';
 
@@ -76,3 +68,5 @@ export class Recipe {
   @UpdateDateColumn()
   lastModified: Date;
 }
+
+// export type RecipeType = Recipe;

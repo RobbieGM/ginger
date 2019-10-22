@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "typeRoots": ["node_modules/@types", "src/typings"],
     "allowJs": true,
+    "baseUrl": "src/",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -22,7 +20,5 @@
     "experimentalDecorators": true,
     "jsx": "react"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

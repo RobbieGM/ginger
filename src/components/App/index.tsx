@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
-import classes from './App.module.scss';
-import BottomNavigation, { Tab } from './BottomNavigation';
-import SavedTab from './SavedTab';
+import classes from './style.module.scss';
+import BottomNavigation, { Tab } from '../BottomNavigation';
+import SavedTab from '../Tab/SavedTab';
+import MyRecipesTab from '../Tab/MyRecipes';
 
 const tabs: Tab[] = [
   {
@@ -13,7 +14,7 @@ const tabs: Tab[] = [
   {
     label: 'My Recipes',
     icon: BookOpen,
-    component: <SavedTab />
+    component: <MyRecipesTab />
   },
   {
     label: 'Popular',
@@ -31,8 +32,6 @@ const tabs: Tab[] = [
     component: <SavedTab />
   }
 ];
-
-// interface Props {}
 
 const App: React.FC<{}> = () => {
   const [tab, setTab] = useState(0);

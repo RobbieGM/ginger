@@ -1,4 +1,4 @@
-@import '/_variables';
+@import '../../../variables';
 
 .recipeCardContainer {
   display: grid;
@@ -28,6 +28,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    cursor: pointer;
     svg {
       stroke: $text;
     }

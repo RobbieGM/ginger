@@ -43,9 +43,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @Mutation(returns => [Recipe])
-  async mergeRecipes(
-    @Arg('recipes', type => [RecipeInput]) recipes: RecipeInput[]
-  ) {
+  async mergeRecipes(@Arg('recipes', type => [RecipeInput]) recipes: RecipeInput[]) {
     const updatedRecipesForClient: Recipe[] = [];
     const updatedRecipesForServer: Recipe[] = [];
     const existingIdsForServer: string[] = []; // If an id from recipes isn't found in this array, it is new for the server
@@ -75,11 +73,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   }
 
   @FieldResolver()
-  averageRating(
-    @Root() recipe: Recipe,
-    @Arg('since') sinceDate: Date
-  ): number | undefined {
-    const ratings = recipe.ratings.filter(rating => rating.date > sinceDate);
+  averageRating(@Root() { ratings }: Recipe): number | undefined {
     if (!ratings.length) return undefined;
 
     const ratingsSum = ratings.reduce((a, b) => a + b.value, 0);
@@ -88,10 +82,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @FieldResolver()
-  async bookmarkDate(
-    @Root() recipe: Recipe,
-    @Ctx() context: Context
-  ): Promise<Date | undefined> {
+  async bookmarkDate(@Root() recipe: Recipe, @Ctx() context: Context): Promise<Date | undefined> {
     const bookmark = await this.manager.findOne(Bookmark, {
       where: {
         user: {
@@ -107,10 +98,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @FieldResolver()
-  userRating(
-    @Root() recipe: Recipe,
-    @Ctx() context: Context
-  ): number | undefined {
+  userRating(@Root() recipe: Recipe, @Ctx() context: Context): number | undefined {
     return undefined;
   }
 }

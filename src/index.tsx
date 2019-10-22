@@ -5,13 +5,13 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
+import AuthenticationGate from 'components/AuthenticationGate';
 import { store, storePersistor } from './store/store';
 import * as serviceWorker from './serviceWorker';
-import App from './App';
+import App from './components/App';
 
-const tester = document.getElementById('h')?.nonce;
-
-const apolloClient = new ApolloClient({
+export const apolloClient = new ApolloClient({
+  credentials: 'include',
   uri: `${window.location.protocol}//${window.location.hostname}${
     process.env.NODE_ENV === 'development' ? ':5000' : ''
   }/graphql`
@@ -19,11 +19,13 @@ const apolloClient = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={apolloClient}>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={storePersistor}>
-        <App />
-      </PersistGate>
-    </Provider>
+    <AuthenticationGate>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={storePersistor}>
+          <App />
+        </PersistGate>
+      </Provider>
+    </AuthenticationGate>
   </ApolloProvider>,
   document.getElementById('root')
 );

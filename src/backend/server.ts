@@ -36,10 +36,18 @@ async function bootstrap() {
 
   const app = express();
   app.use(cookieParser());
-  apollo.applyMiddleware({ app });
+  apollo.applyMiddleware({
+    app,
+    cors: {
+      credentials: true,
+      origin: (requestOrigin, callback) => {
+        callback(null, true);
+      }
+    }
+  });
 
   app.listen({ port: 5000 }, () => {
-    console.log(`Ready at localhost:5000${apollo.graphqlPath}`);
+    console.log(`Ready at http://localhost:5000${apollo.graphqlPath}`);
   });
 }
 

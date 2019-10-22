@@ -1,3 +1,7 @@
+import { Recipe } from '../backend/data-types/Recipe';
+
+export { Recipe } from '../backend/data-types/Recipe';
+
 // type MeasuringUnit =
 //   | 'cups'
 //   | 'ml'
@@ -16,21 +20,9 @@
 //   units: MeasuringUnit;
 // }
 
-export interface Recipe {
-  id: string;
-  name: string;
-  averageStars: number;
-  userStars?: number;
-  bookmarkDate?: number;
-  prepTime: number;
-  cookTime: number;
-  ingredients: string[];
-  directions: string;
-  imageURL?: string;
-  lastModified: number;
-}
+export type PartialRecipe = { id: string } & Partial<Recipe>;
 
 export default interface AppState {
   // savedRecipes: Recipe[];
-  recipes: Recipe[];
+  recipes: PartialRecipe[];
 }
