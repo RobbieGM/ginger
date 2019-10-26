@@ -1,5 +1,10 @@
 @import '../../../variables';
 
+.recipeList {
+  text-align: center;
+  color: $text-light;
+}
+
 .recipeCardContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -10,7 +15,7 @@
 .recipeCard {
   user-select: none;
   cursor: pointer;
-  background: rgba(white, 0.8);
+  background: $translucent-white;
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -21,7 +26,7 @@
   box-shadow: 0 -160px 60px -60px rgba(0, 0, 0, 0.5) inset, 0 16px 16px rgba(0, 0, 0, 0.2);
   .bookmarkIcon {
     align-self: flex-end;
-    background: rgba(white, 0.8);
+    background: $translucent-white;
     width: 36px;
     height: 36px;
     display: flex;

@@ -1,0 +1,49 @@
+@import '../../variables';
+
+.newRecipeFormContainer {
+  background: $background;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.topBar {
+  position: sticky;
+  display: flex;
+  align-items: center;
+  top: 0;
+  height: 48px;
+  background: $translucent-white;
+  box-shadow: $shadow-medium;
+  .closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-right: 12px;
+    color: $light-gray;
+    cursor: pointer;
+    transition-duration: 0.2s;
+    &:active,
+    &[data-focus-visible-added] {
+      color: $lighter-gray;
+      transition-duration: 0s;
+    }
+  }
+}
+
+.form {
+  margin: 24px;
+  h2 input {
+    &::placeholder {
+      color: $text-light;
+      opacity: 0.7;
+    }
+  }
+}

@@ -5,14 +5,15 @@
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
   font: 0.8em 'Lexend Deca';
-  background: rgba(white, 0.8);
+  background: $translucent-white;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-medium;
   .tab {
     cursor: pointer;
     flex-basis: 100px;
@@ -21,6 +22,28 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    outline: none;
+    &::before {
+      content: '';
+      background-color: rgba($green, 0.2);
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      z-index: -1;
+      border-radius: 999px;
+      transition: all 0.2s;
+      opacity: 0;
+      transform: scale(0.6);
+    }
+
+    &.scaledRipple::before {
+      transform: scale(1);
+    }
+
+    &.filledRipple::before {
+      opacity: 1;
+    }
+
     .label {
       white-space: nowrap;
     }

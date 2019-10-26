@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'focus-visible';
 import './index.scss';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -10,7 +11,7 @@ import { store, storePersistor } from './store/store';
 import * as serviceWorker from './serviceWorker';
 import App from './components/App';
 
-export const apolloClient = new ApolloClient({
+const apolloClient = new ApolloClient({
   credentials: 'include',
   uri: `${window.location.protocol}//${window.location.hostname}${
     process.env.NODE_ENV === 'development' ? ':5000' : ''

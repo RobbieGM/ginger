@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
+import PopularTab from 'components/Tab/Popular';
 import classes from './style.module.scss';
 import BottomNavigation, { Tab } from '../BottomNavigation';
 import SavedTab from '../Tab/SavedTab';
@@ -19,7 +20,7 @@ const tabs: Tab[] = [
   {
     label: 'Popular',
     icon: TrendingUp,
-    component: <SavedTab />
+    component: <PopularTab />
   },
   {
     label: 'New',

@@ -44,9 +44,6 @@ function useAuth() {
 
 const AuthenticationProvider: React.FC<{}> = ({ children }) => {
   const state = useAuth();
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
   return state === AuthState.AUTHENTICATED ? (
     <>{children}</>
   ) : state === AuthState.LOADING ? (

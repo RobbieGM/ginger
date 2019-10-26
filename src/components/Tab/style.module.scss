@@ -1,3 +1,10 @@
+@import '../../variables';
+
 .tab {
   margin: 36px;
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }

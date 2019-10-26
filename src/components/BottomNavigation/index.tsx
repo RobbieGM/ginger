@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon } from 'react-feather';
 import classNames from 'classnames';
+import RippleButton from './RippleButton';
 import classes from './style.module.scss';
 
 export interface Tab {
@@ -18,16 +19,14 @@ interface Props {
 const BottomNavigation: React.FC<Props> = ({ tabs, setTab, selectedTabIndex }) => (
   <nav className={classes.bottomNavigation}>
     {tabs.map((tab, index) => (
-      <button
-        className={classNames('reset', classes.tab, {
-          [classes.selected]: index === selectedTabIndex
-        })}
+      <RippleButton
+        selected={index === selectedTabIndex}
         key={tab.label}
         onClick={() => setTab(index)}
       >
         <tab.icon className={classes.icon} />
         <div className={classes.label}>{tab.label}</div>
-      </button>
+      </RippleButton>
     ))}
   </nav>
 );

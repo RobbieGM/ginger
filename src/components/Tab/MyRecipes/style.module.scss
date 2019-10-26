@@ -1,0 +1,42 @@
+@import '../../../variables';
+
+button.addButtonContainer {
+  position: fixed;
+  right: 24px;
+  bottom: 48px + 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  width: 48px;
+  height: 48px;
+  background: $translucent-white;
+  cursor: pointer;
+  box-shadow: $shadow-high;
+  svg {
+    color: $light-gray;
+  }
+  transition: background 0.2s, box-shadow 0.2s;
+  &:active,
+  &[data-focus-visible-added] {
+    transition: box-shadow 0.1s;
+    background: #eeeeee;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.newRecipeFormContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  transform-origin: calc(100% - 24px - 24px) calc(100% - 48px - 24px - 24px);
+  transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  &:not(.open) {
+    transform: scale(0);
+    opacity: 0;
+    visibility: hidden;
+  }
+}

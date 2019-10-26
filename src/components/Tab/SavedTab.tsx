@@ -23,15 +23,23 @@ const SavedTab: React.FC = () => {
   return (
     <div className={classes.tab}>
       <h1>Saved</h1>
-      {loading ? (
-        <Loading />
-      ) : recipes !== undefined && recipes.length > 0 ? (
-        <RecipeList recipes={recipes} loadMore={() => []} />
-      ) : recipes !== undefined ? (
-        <>You dont have any recipes yet</>
-      ) : (
-        <>An error occurred.</>
-      )}
+      <RecipeList
+        recipes={recipes}
+        loading={false}
+        errorMessage={
+          <>
+            We had trouble getting to your saved recipes. This data may have been corrupted. Try
+            clearing your this site&apos;s data in your browser.
+          </>
+        }
+        emptyState={
+          <>
+            You haven&apos;t saved any recipes yet. To do that, click the bookmark icon on a recipe.
+            Saved recipes are stored for offline use.
+          </>
+        }
+        loadMore={() => []}
+      />
 
       {/* JSON.stringify(savedRecipes) */}
     </div>

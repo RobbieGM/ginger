@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=PT+Serif:400,700|Lexend+Deca&display=swap');
+@import url('https://fonts.googleapis.com/css?family=PT+Serif:400,700|Lexend+Deca');
 @import '_variables';
 
 body {
@@ -6,7 +6,7 @@ body {
   // background-image: url('assets/background-noise.svg');
   color: $text;
   margin: 0;
-  font-family: 'PT Serif', Georgia, 'Times New Roman', Times, serif;
+  font-family: 'Lexend Deca', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: $background;
 }
 
@@ -21,7 +21,7 @@ h3,
 h4,
 h5,
 h6 {
-  margin-top: 0;
+  font-family: 'PT Serif', Georgia, 'Times New Roman', Times, serif;
   user-select: none;
 }
 
@@ -32,19 +32,19 @@ button.reset {
   width: auto;
   overflow: visible;
   background: transparent;
-  // inherit font & color from ancestor
   color: inherit;
   font: inherit;
-  // Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+
   line-height: normal;
-  // Corrects font smoothing for webkit
-  -webkit-font-smoothing: inherit;
-  -moz-osx-font-smoothing: inherit;
-  // Corrects inability to style clickable `input` types in iOS
   appearance: none;
-  // Remove excess padding and border in Firefox 4+
   &::-moz-focus-inner {
     border: 0;
     padding: 0;
   }
+}
+
+input.reset {
+  font: inherit;
+  background: inherit;
+  border: none;
+  appearance: none;
 }

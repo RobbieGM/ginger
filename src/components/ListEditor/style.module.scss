@@ -1,0 +1,69 @@
+@import '../../variables';
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: 32px;
+  gap: 12px;
+}
+
+.listItem {
+  box-shadow: $shadow-close;
+  background: $translucent-white;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  border-radius: 3px;
+  .buttonContainer {
+    display: flex;
+    align-items: center;
+  }
+  .iconContainer {
+    box-sizing: content-box;
+    width: 16px;
+    height: 16px;
+    padding: 8px;
+    cursor: pointer;
+    &:not(:first-child) {
+      padding-left: 4px;
+    }
+    &:not(:last-child) {
+      padding-right: 4px;
+    }
+    svg {
+      color: $light-gray;
+      width: 18px;
+      height: 18px;
+      transition: color 0.2s;
+    }
+    &:active,
+    &[data-focus-visible-added] {
+      outline: none;
+      ::-moz-focus-inner {
+        outline: none;
+      }
+      svg {
+        transition: none;
+        color: $lighter-gray;
+      }
+    }
+  }
+  &:not(.stub) .listNumber {
+    margin-right: 4px;
+  }
+  &.stub .listNumber {
+    margin-left: 8px;
+  }
+  input {
+    flex: 1;
+    margin-right: 8px;
+  }
+  &.stub input {
+    margin-left: 8px;
+  }
+}
+
+.sortableHeldItem {
+  z-index: 5;
+  box-shadow: $shadow-medium;
+}
