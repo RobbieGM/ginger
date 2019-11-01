@@ -1,12 +1,5 @@
 import { ObjectType, Field, ID, Float, Int, Authorized } from 'type-graphql';
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  OneToMany,
-  UpdateDateColumn,
-  ManyToOne
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Rating } from './Rating';
 import { Bookmark } from './Bookmark';
 import { User } from './User';
@@ -56,17 +49,19 @@ export class Recipe {
   @Column('simple-json')
   ingredients: string[];
 
-  @Field()
-  @Column()
-  directions: string;
+  @Field(type => [String])
+  @Column('simple-json')
+  directions: string[];
 
   @Field({ nullable: true })
   @Column({ nullable: true })
   imageURL?: string;
 
   @Field()
+  @Column()
+  private: boolean;
+
+  @Field()
   @UpdateDateColumn()
   lastModified: Date;
 }
-
-// export type RecipeType = Recipe;

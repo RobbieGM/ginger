@@ -1,0 +1,102 @@
+@import '../../variables';
+
+.modalOverlay {
+  position: fixed;
+  z-index: 999;
+  background: black;
+  visibility: hidden;
+  opacity: 0;
+  transition-timing-function: ease-in;
+  transition: all 0.2s;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  &.active {
+    transition-timing-function: ease-out;
+    visibility: visible;
+    opacity: 0.2;
+  }
+}
+
+.modalDialog {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 50vw;
+  top: 50vh;
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  height: 380px;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in;
+  transform-origin: center;
+  transform: translate(-50%, -50%) scale(0.8);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: $shadow-high;
+  border-radius: 10px;
+  &.active {
+    transition-timing-function: ease-out;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    visibility: visible;
+  }
+  @media screen and (max-width: 450px) {
+    top: unset;
+    bottom: 16px;
+    transform: translateX(-50%) translateY(40px);
+    height: 300px;
+    &.active {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+.dialogContent {
+  flex: 1;
+  overflow-y: auto;
+  margin: 16px;
+  margin-bottom: 0;
+  h2 {
+    margin-top: 0;
+  }
+}
+
+.buttons {
+  margin: 16px;
+  flex-basis: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap; // Should be rare, but on small screens with long button text it can happen
+  button {
+    @mixin color($color, $bg-opacity: 0.1, $active-bg-opacity: 0.2) {
+      background: rgba($color, $bg-opacity);
+      color: $color;
+      &:active,
+      &[touched],
+      &[data-focus-visible-added] {
+        background: rgba($color, $active-bg-opacity);
+      }
+    }
+    &.red {
+      @include color($red);
+    }
+    &.green {
+      @include color($green);
+    }
+    &.blue {
+      @include color($blue);
+    }
+    padding: 0 20px;
+    height: 32px;
+    @include color($text, 0.07, 0.15);
+    border-radius: 2px;
+    margin-left: 16px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+}

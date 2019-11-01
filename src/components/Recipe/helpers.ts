@@ -1,9 +1,9 @@
 import { Dispatch } from 'redux';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { QueryResult } from 'react-apollo';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import deepEqual from 'dequal';
+import { UseQueryState } from 'urql';
 import { AppAction } from '../../store/actions';
 import { Recipe } from '../../backend/data-types/Recipe';
 import AppState, { PartialRecipe } from '../../store/state';
@@ -25,12 +25,12 @@ export function useMergedRecipeIds(recipes: PartialRecipe[]): string[] {
 }
 
 /**
- * Automatically merges recipes from an apollo query once they are loaded, then returns an updating
+ * Automatically merges recipes from a graphql query once they are loaded, then returns an updating
  * version of them synchronized with the store.
  * @param query The query to merge
  */
 export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
-  request: QueryResult<TData>,
+  request: UseQueryState<TData>,
   mapDataToResult: (data: TData) => Pick<Recipe, T | 'id'>[]
 ) {
   const dispatch = useDispatch();
@@ -55,9 +55,17 @@ export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
   ); // Undefined if not fetched
   return {
     recipes: recipesFromStore,
-    loading: request.loading,
+    loading: request.fetching,
     errorOccurred: !!request.error
   };
+}
+
+export function recipeHasFields<T extends keyof Recipe>(
+  recipe: PartialRecipe,
+  fields: T[]
+): recipe is Pick<Recipe, T> & { id: string } {
+  type RequestedRecipeType = Pick<Recipe, T> & { id: string };
+  return fields.every(field => field in recipe);
 }
 
 /**
@@ -76,33 +84,24 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
   const isNotNull = <T>(x: T | undefined | null): x is T => x !== undefined && x !== null;
   const storedRecipes = useSelector((state: AppState) => state.recipes, deepEqual);
   const getRecipeFromStoreById = (id: string) => storedRecipes.find(recipe => recipe.id === id);
-  const recipeHasRequestedFields = (recipe: PartialRecipe): recipe is RequestedRecipeType =>
-    fields.every(field => field in recipe);
+  const recipeHasRequestedFields = (recipe: PartialRecipe) => recipeHasFields(recipe, fields);
   const storedRecipesWithAllFields = recipeIds
     .map(getRecipeFromStoreById)
     .filter(isNotNull)
-    .filter(recipeHasRequestedFields);
+    .filter((recipe): recipe is RequestedRecipeType => recipeHasRequestedFields(recipe));
   const recipeIdAvailableInStore = (id: string) =>
     storedRecipesWithAllFields.map(r => r.id).includes(id);
   const missingRecipeIds =
-    storedRecipesWithAllFields.length < recipeIds.length
+    storedRecipesWithAllFields.length === recipeIds.length
       ? []
       : recipeIds.filter(id => !recipeIdAvailableInStore(id));
   const missingRecipesQuery = useRecipesQuery(missingRecipeIds, ['id', ...fields]);
   const errorOccurredInQuery = !!missingRecipesQuery.error;
-  const [result, setResult] = useState<RecipeResponse>(
-    missingRecipeIds.length === 0
-      ? {
-          recipes: storedRecipesWithAllFields,
-          loading: false,
-          errorOccurred: false
-        }
-      : {
-          recipes: undefined,
-          loading: true,
-          errorOccurred: false
-        }
-  );
+  const [result, setResult] = useState<RecipeResponse>({
+    recipes: undefined,
+    loading: true,
+    errorOccurred: false
+  });
   useDeepCompareEffect(() => {
     if (missingRecipeIds.length > 0) {
       const fetchedData = missingRecipesQuery.data;
@@ -115,15 +114,21 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
         recipes: missingRecipesQuery.data
           ? recipeIds.map(findInStoreOrFetched).filter(isNotNull)
           : undefined,
-        loading: missingRecipesQuery.loading,
+        loading: missingRecipesQuery.fetching,
         errorOccurred: errorOccurredInQuery
+      });
+    } else {
+      setResult({
+        recipes: storedRecipesWithAllFields,
+        loading: false,
+        errorOccurred: false
       });
     }
   }, [
     missingRecipeIds.length,
     missingRecipesQuery.data,
     errorOccurredInQuery,
-    missingRecipesQuery.loading,
+    missingRecipesQuery.fetching,
     recipeIds,
     setResult,
     storedRecipesWithAllFields

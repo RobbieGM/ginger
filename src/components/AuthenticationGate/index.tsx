@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useApolloClient, useQuery, useMutation } from 'react-apollo';
-import { gql } from 'apollo-boost';
+import { useMutation } from 'urql';
 
 enum AuthState {
   AUTHENTICATED,
@@ -8,7 +7,7 @@ enum AuthState {
   FAILED
 }
 
-const CREATE_ACCOUNT = gql`
+const CREATE_ACCOUNT = `
   mutation {
     createAccount
   }
@@ -21,16 +20,16 @@ function useAuth() {
   }
   const userId = getCookieValue('userId');
   const [state, setState] = useState(userId ? AuthState.AUTHENTICATED : AuthState.LOADING);
-  const [createAccount] = useMutation<{ createAccount: string }>(CREATE_ACCOUNT);
+  const [_, createAccount] = useMutation<{ createAccount: string }>(CREATE_ACCOUNT);
   useEffect(() => {
     if (state === AuthState.LOADING) {
       createAccount()
-        .then(({ data, errors }) => {
+        .then(({ data, error }) => {
           if (data) {
             document.cookie = `userId=${data.createAccount}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
             setState(AuthState.AUTHENTICATED);
-          } else if (errors) {
-            throw errors;
+          } else if (error) {
+            throw error;
           }
         })
         .catch(error => {

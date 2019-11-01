@@ -6,7 +6,7 @@ import classes from './style.module.scss';
 
 const DragHandle = SortableHandle(() => (
   // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-  <div className={classes.iconContainer} tabIndex={0}>
+  <div className={`${classes.iconContainer} ${classes.dragHandle}`} tabIndex={0}>
     <Move />
   </div>
 ));
@@ -17,6 +17,7 @@ interface Props {
   onChange: (value: string) => void;
   onRemove: () => void;
   placeholder: string;
+  required: boolean;
   /**
    * If true, this list item is non-deletable and non-movable. Should only be at the end of a list, representing a potential item.
    */
@@ -26,6 +27,7 @@ interface Props {
 const ListItem: React.FC<Props> = ({
   content,
   marker,
+  required,
   onChange,
   onRemove,
   isStub,
@@ -34,7 +36,7 @@ const ListItem: React.FC<Props> = ({
   <div className={classNames(classes.listItem, { [classes.stub]: isStub })}>
     {!isStub && (
       <div className={classes.buttonContainer}>
-        <button className={`reset ${classes.iconContainer}`} onClick={onRemove}>
+        <button type='button' className={classes.iconContainer} onClick={onRemove}>
           <X />
         </button>
         <DragHandle />
@@ -43,6 +45,7 @@ const ListItem: React.FC<Props> = ({
     {marker && <span className={classes.listNumber}>{marker}</span>}
     <input
       type='text'
+      required={required}
       value={content}
       onChange={event => onChange(event.target.value)}
       placeholder={placeholder}

@@ -5,11 +5,11 @@ import ListItem from './ListItem';
 import { KeyedList } from './types';
 
 function useIdGenerator() {
-  const [id, setId] = useState(0);
+  const [id, setId] = useState(Math.random());
   return {
     id,
-    increment() {
-      setId(x => x + 1);
+    refresh() {
+      setId(Math.random());
     }
   };
 }
@@ -18,13 +18,12 @@ const InnerListEditor: React.FC<{
   type: 'ordered' | 'unordered';
   items: KeyedList<string>;
   listItemPlaceholder: string;
+  required: boolean;
   removeItem: (index: number) => void;
   setItem: (index: number, value: string) => void;
   addItem: (value: string, key: number) => void;
-  // getNextItemId: () => number;
-}> = ({ type, items, addItem, setItem, removeItem, /* getNextItemId */ listItemPlaceholder }) => {
-  const { id: nextItemId, increment: incrementNextId } = useIdGenerator();
-  console.warn(`keys: ${items.map(item => item.key)}, next: ${nextItemId}`);
+}> = ({ type, items, required, addItem, setItem, removeItem, listItemPlaceholder }) => {
+  const { id: nextItemId, refresh: refreshId } = useIdGenerator();
   const stub = {
     key: nextItemId,
     value: ''
@@ -39,6 +38,7 @@ const InnerListEditor: React.FC<{
             index={index}
             content={item.value}
             isStub={isStub}
+            required={required && isStub && items.length === 0}
             collection={
               isStub
                 ? 1
@@ -47,7 +47,7 @@ const InnerListEditor: React.FC<{
             onChange={value => {
               if (isStub) {
                 addItem(value, nextItemId);
-                incrementNextId();
+                refreshId();
               } else {
                 setItem(index, value);
               }

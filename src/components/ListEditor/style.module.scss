@@ -1,8 +1,11 @@
 @import '../../variables';
 
 .list {
+  // @media screen and (max-width: 400px) {
+  //   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  // }
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   grid-auto-rows: 32px;
   gap: 12px;
 }
@@ -57,13 +60,22 @@
   input {
     flex: 1;
     margin-right: 8px;
+    min-width: 80px;
   }
   &.stub input {
     margin-left: 8px;
   }
 }
 
+.showInvalid input:invalid {
+  box-shadow: 0 -5px 5px -5px $red inset;
+}
+
 .sortableHeldItem {
   z-index: 5;
   box-shadow: $shadow-medium;
+  .dragHandle svg {
+    transition: none;
+    color: $lighter-gray;
+  }
 }

@@ -33,7 +33,7 @@ const BottomNavigationRippleButton: React.FC<ButtonProps & { selected: boolean }
   }
   return (
     <button
-      className={classNames('reset', classes.tab, {
+      className={classNames(classes.tab, {
         [classes.selected]: selected,
         [classes.scaledRipple]: rippleSize === 'large',
         [classes.filledRipple]: rippleFill === 'filled'
@@ -46,7 +46,6 @@ const BottomNavigationRippleButton: React.FC<ButtonProps & { selected: boolean }
       onTouchCancel={mouseUp}
       onMouseUp={mouseUp}
       onMouseLeave={mouseUp}
-      onBlur={mouseUp}
     >
       {children}
     </button>

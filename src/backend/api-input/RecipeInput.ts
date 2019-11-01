@@ -1,5 +1,5 @@
 import { InputType, Field, ID } from 'type-graphql';
-import { Recipe } from '../data-types/Recipe';
+import { Recipe } from 'store/state';
 
 @InputType()
 export class RecipeInput implements Partial<Recipe> {
@@ -18,8 +18,8 @@ export class RecipeInput implements Partial<Recipe> {
   @Field(type => [String])
   ingredients: string[];
 
-  @Field()
-  directions: string;
+  @Field(type => [String])
+  directions: string[];
 
   @Field({ nullable: true })
   imageURL: string;

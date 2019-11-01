@@ -18,6 +18,7 @@ button.addButtonContainer {
   }
   transition: background 0.2s, box-shadow 0.2s;
   &:active,
+  &[touched],
   &[data-focus-visible-added] {
     transition: box-shadow 0.1s;
     background: #eeeeee;
@@ -33,7 +34,7 @@ button.addButtonContainer {
   bottom: 0;
   z-index: 1;
   transform-origin: calc(100% - 24px - 24px) calc(100% - 48px - 24px - 24px);
-  transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
   &:not(.open) {
     transform: scale(0);
     opacity: 0;

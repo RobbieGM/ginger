@@ -3,21 +3,21 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Bookmark, Star, Clock } from 'react-feather';
 import classes from './style.module.scss';
-import { store } from '../../../store/store';
+import { createStoreWithClient, DispatchType } from '../../../store/store';
 import { Recipe } from '../../../backend/data-types/Recipe';
-import { RECIPE_PREVIEW_FIELD_TYPE } from './queries';
+import { RecipePreviewType } from './queries';
 import { unbookmarkRecipe, bookmarkRecipe } from '../actions';
 import { ReactComponent as Loading } from '../../../assets/loading.svg';
 
 interface Props {
-  recipes: Pick<Recipe, RECIPE_PREVIEW_FIELD_TYPE>[] | undefined;
+  recipes: RecipePreviewType[] | undefined;
   loading: boolean;
   errorMessage: JSX.Element;
   emptyState: JSX.Element;
   /**
    * A function called to load more recipes into the RecipeList, used for infinite scrolling.
    */
-  loadMore: () => string[];
+  loadMore: () => Promise<RecipePreviewType[]>;
 }
 
 /**
@@ -26,7 +26,7 @@ interface Props {
  * @param getRecipeIds an async generator that returns ids of recipes to be fetched from the store.
  */
 const RecipeList: React.FC<Props> = ({ recipes, loading, emptyState, errorMessage, loadMore }) => {
-  const dispatch = useDispatch<typeof store.dispatch>();
+  const dispatch = useDispatch<DispatchType>();
   const toggleBookmark = (recipe: Pick<Recipe, 'id' | 'bookmarkDate'>) =>
     dispatch(recipe.bookmarkDate ? unbookmarkRecipe(recipe.id) : bookmarkRecipe(recipe.id));
 
@@ -49,7 +49,7 @@ const RecipeList: React.FC<Props> = ({ recipes, loading, emptyState, errorMessag
                 style={{ backgroundImage: `url(${recipe.imageURL})` }}
               >
                 <button
-                  className={classNames('reset', classes.bookmarkIcon, {
+                  className={classNames(classes.bookmarkIcon, {
                     [classes.bookmarked]: recipe.bookmarkDate
                   })}
                   onClick={() => toggleBookmark(recipe)}

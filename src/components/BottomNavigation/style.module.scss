@@ -6,13 +6,12 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
-  font: 0.8em 'Lexend Deca';
+  font: 0.8em $sans;
   background: $translucent-white;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  user-select: none;
   box-shadow: $shadow-medium;
   .tab {
     cursor: pointer;

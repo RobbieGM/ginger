@@ -13,6 +13,11 @@ body {
 * {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+}
+
+:not(input):not(textarea) {
+  user-select: none;
 }
 
 h1,
@@ -22,11 +27,11 @@ h4,
 h5,
 h6 {
   font-family: 'PT Serif', Georgia, 'Times New Roman', Times, serif;
-  user-select: none;
 }
 
-button.reset {
+button {
   border: none;
+  outline: none;
   margin: 0;
   padding: 0;
   width: auto;
@@ -43,6 +48,8 @@ button.reset {
 }
 
 input.reset {
+  padding: 0;
+  outline: none;
   font: inherit;
   background: inherit;
   border: none;

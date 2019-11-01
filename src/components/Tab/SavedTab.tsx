@@ -1,35 +1,37 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import deepEqual from 'dequal';
 import RecipeList from '../Recipe/List';
 import AppState from '../../store/state';
 import classes from './style.module.scss';
-import { usePartialRecipes } from '../Recipe/helpers';
-import { RECIPE_PREVIEW_FIELDS } from '../Recipe/List/queries';
-import { ReactComponent as Loading } from '../../assets/loading.svg';
+import { usePartialRecipes, recipeHasFields } from '../Recipe/helpers';
+import { RECIPE_PREVIEW_FIELDS, RecipePreviewType } from '../Recipe/List/queries';
 
 const SavedTab: React.FC = () => {
-  const savedRecipeIds = useSelector(
-    (state: AppState) =>
-      state.recipes.filter(recipe => recipe.bookmarkDate).map(recipe => recipe.id),
+  const savedRecipes = useSelector(
+    (state: AppState) => state.recipes.filter(recipe => recipe.bookmarkDate),
     deepEqual
   );
-  // const savedRecipeIds: string[] = useMemo(() => [], []);
-  // const memoizedSavedRecipeIds = useMemo(() => savedRecipeIds, []);
-  const { recipes, loading, errorOccurred } = usePartialRecipes(
-    savedRecipeIds,
+  const { recipes: onlineRecipes, loading } = usePartialRecipes(
+    savedRecipes.map(recipe => recipe.id),
     RECIPE_PREVIEW_FIELDS
   );
+  const recipes = navigator.onLine
+    ? onlineRecipes
+    : savedRecipes.filter((recipe): recipe is RecipePreviewType =>
+        recipeHasFields(recipe, RECIPE_PREVIEW_FIELDS)
+      );
+
   return (
     <div className={classes.tab}>
       <h1>Saved</h1>
       <RecipeList
         recipes={recipes}
-        loading={false}
+        loading={loading}
         errorMessage={
           <>
-            We had trouble getting to your saved recipes. This data may have been corrupted. Try
-            clearing your this site&apos;s data in your browser.
+            We had trouble accessing your saved recipes. If this is because there is missing data,
+            try again when you&apos;re online.
           </>
         }
         emptyState={
@@ -38,7 +40,7 @@ const SavedTab: React.FC = () => {
             Saved recipes are stored for offline use.
           </>
         }
-        loadMore={() => []}
+        loadMore={async () => []}
       />
 
       {/* JSON.stringify(savedRecipes) */}

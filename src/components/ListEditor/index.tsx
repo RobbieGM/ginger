@@ -9,15 +9,8 @@ interface Props {
   nextPlaceholder: string;
   list: KeyedList<string>;
   setList: (list: KeyedList<string>) => void;
+  required?: boolean;
 }
-
-// function useIdGenerator() {
-//   const [current, setCurrent] = useState(0);
-//   return () => {
-//     setCurrent(c => c + 1);
-//     return current;
-//   };
-// }
 
 function useKeyedList<T>() {
   const [list, setList] = useState([] as KeyedList<T>);
@@ -39,22 +32,21 @@ function useKeyedList<T>() {
       setList([
         ...list,
         {
-          key, // : key !== undefined ? key : nextId(),
+          key,
           value: element
         }
       ]);
     }
-    // getNextId: nextId
   };
 }
 
-const ListEditor: React.FC<Props> = ({ list, setList, type, nextPlaceholder }) => {
-  // const { list, set, move, remove, push /* , getNextId */ } = useKeyedList<string>();
+const ListEditor: React.FC<Props> = ({ list, required, setList, type, nextPlaceholder }) => {
   return (
     <>
       <InnerListEditor
         type={type}
         items={list}
+        required={required || false}
         listItemPlaceholder={nextPlaceholder}
         addItem={(value, key) => {
           setList([...list, { key, value }]);

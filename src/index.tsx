@@ -2,32 +2,35 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'focus-visible';
 import './index.scss';
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo';
 import AuthenticationGate from 'components/AuthenticationGate';
-import { store, storePersistor } from './store/store';
+import { createClient, Provider as ClientProvider } from 'urql';
+import { createStoreWithClient } from './store/store';
 import * as serviceWorker from './serviceWorker';
 import App from './components/App';
 
-const apolloClient = new ApolloClient({
-  credentials: 'include',
-  uri: `${window.location.protocol}//${window.location.hostname}${
+const apiClient = createClient({
+  url: `${window.location.protocol}//${window.location.hostname}${
     process.env.NODE_ENV === 'development' ? ':5000' : ''
-  }/graphql`
+  }/graphql`,
+  fetchOptions: {
+    credentials: 'include'
+  }
 });
 
+const { store, persistor } = createStoreWithClient(apiClient);
+
 ReactDOM.render(
-  <ApolloProvider client={apolloClient}>
+  <ClientProvider value={apiClient}>
     <AuthenticationGate>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={storePersistor}>
+      <ReduxProvider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
           <App />
         </PersistGate>
-      </Provider>
+      </ReduxProvider>
     </AuthenticationGate>
-  </ApolloProvider>,
+  </ClientProvider>,
   document.getElementById('root')
 );
 

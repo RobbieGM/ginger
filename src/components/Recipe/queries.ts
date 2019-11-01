@@ -1,7 +1,5 @@
-import { gql } from 'apollo-boost';
-import { useQuery } from 'react-apollo';
+import { useQuery } from 'urql';
 import { Recipe } from '../../store/state';
-// import { apolloClient } from '../..';
 
 /**
  * Fetches recipes with given fields
@@ -10,16 +8,18 @@ import { Recipe } from '../../store/state';
  * @param fields Required fields on each Recipe
  */
 export function useRecipesQuery<T extends keyof Recipe>(recipeIds: string[], fields: T[]) {
-  const GET_RECIPES = gql`
+  const GET_RECIPES = `
     query recipes($ids: [String!]!) {
       ${fields.join('\n')}
     }
   `;
   type RequestedRecipeType = Pick<Recipe, T>;
-  return useQuery<RequestedRecipeType[]>(GET_RECIPES, {
-    skip: recipeIds.length === 0 || fields.length === 0,
+  const [result] = useQuery<RequestedRecipeType[]>({
+    query: GET_RECIPES,
     variables: {
       ids: recipeIds
-    }
+    },
+    pause: fields.length === 0 || recipeIds.length === 0
   });
+  return result;
 }

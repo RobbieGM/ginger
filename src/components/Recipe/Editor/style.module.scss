@@ -1,0 +1,192 @@
+@import '../../../variables';
+
+$max-width: 500px;
+
+.recipeEditorContainer {
+  background: $background;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.topBar {
+  position: sticky;
+  display: flex;
+  align-items: center;
+  top: 0;
+  z-index: 2;
+  height: 48px;
+  background: $translucent-white;
+  box-shadow: $shadow-medium;
+  .closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-right: 12px;
+    color: black;
+    opacity: 0.8;
+    cursor: pointer;
+    transition-duration: 0.2s;
+    &:active,
+    &[touched],
+    &[data-focus-visible-added] {
+      opacity: 0.4;
+      transition-duration: 0s;
+    }
+  }
+}
+
+.form {
+  &.submitAttempted {
+    h2 input:invalid {
+      box-shadow: 0 -5px 5px -5px $red inset;
+    }
+    .timeInput:invalid {
+      &:invalid {
+        box-shadow: 0 0 3px $red inset;
+      }
+    }
+  }
+  // &:not(.submitAttempted) {
+  //   :invalid {
+  //     box-shadow: none;
+  //   }
+  // }
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 0 24px;
+  h2 {
+    margin: 12px 0;
+  }
+  h2 input {
+    min-width: 160px;
+    width: 100%;
+    &::placeholder {
+      color: $text-light;
+      opacity: 0.7;
+    }
+    &:focus::placeholder {
+      opacity: 0.5;
+    }
+  }
+  .basicInfo {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    margin: -12px;
+    & > * {
+      margin: 12px;
+    }
+    @media screen and (max-width: $max-width) {
+      & > * {
+        flex-basis: 100%;
+      }
+    }
+  }
+  input::placeholder {
+    color: $text-light;
+    opacity: 0.8;
+  }
+  input:focus::placeholder {
+    // color: $light-gray;
+    opacity: 0.5;
+  }
+}
+
+.form .imageUploadContainer {
+  cursor: pointer;
+  box-shadow: $shadow-close;
+  background: $translucent-white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  box-sizing: border-box;
+  padding: 16px;
+  text-align: center;
+  border-radius: 10px;
+  &.hasImage {
+    background-position: center;
+    background-size: cover;
+    * {
+      visibility: hidden;
+    }
+  }
+  svg {
+    color: black;
+    opacity: 0.5;
+  }
+  &[data-focus-visible-added] {
+    box-shadow: $shadow-high;
+    transition: box-shadow 0.1s;
+  }
+  @media screen and (max-width: $max-width) {
+    margin: 0 auto;
+    height: 150px;
+  }
+}
+
+.otherMetadata {
+  flex: 1;
+  input.timeInput {
+    -moz-appearance: textfield;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+    background: $translucent-white;
+    width: 180px;
+    padding: 0 16px;
+    display: block;
+    margin: 8px 0;
+    border-radius: 999px;
+    height: 24px;
+    box-shadow: $shadow-close;
+  }
+  @media screen and (max-width: $max-width) {
+    text-align: center;
+    h2 {
+      margin-top: 0;
+      input {
+        text-align: center;
+      }
+    }
+    input.timeInput {
+      margin-bottom: 0;
+      margin-right: auto;
+      margin-left: auto;
+    }
+  }
+}
+
+.submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px 24px;
+  margin-left: auto;
+  margin-top: 16px;
+  border-radius: 999px;
+  box-shadow: $shadow-high;
+  box-sizing: border-box;
+  background: rgba($green, 0.15);
+  color: $green;
+  &:active,
+  &[data-focus-visible-added] {
+    box-shadow: $shadow-close;
+    background: rgba($green, 0.3);
+  }
+  svg {
+    margin-right: 8px;
+  }
+}
