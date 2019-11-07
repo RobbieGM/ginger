@@ -14,7 +14,7 @@
 
 .recipeCard {
   cursor: pointer;
-  background: $translucent-white;
+  background-image: linear-gradient(45deg, #c8f7ff 0%, #f9eecf 100%);
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -22,7 +22,7 @@
   padding: 12px;
   border-radius: 12px;
   color: white;
-  box-shadow: 0 -160px 60px -60px rgba(0, 0, 0, 0.5) inset, 0 16px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 -150px 80px -80px rgba(0, 0, 0, 0.3) inset, $shadow-high;
   .bookmarkIcon {
     align-self: flex-end;
     background: $translucent-white;

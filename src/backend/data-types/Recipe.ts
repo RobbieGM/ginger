@@ -27,11 +27,11 @@ export class Recipe {
   ratings: Rating[];
 
   @Authorized()
-  @Field(type => Int)
+  @Field(type => Int, { nullable: true })
   userRating?: number;
 
   @Authorized()
-  @Field()
+  @Field({ nullable: true })
   bookmarkDate?: Date;
 
   @OneToMany(type => Bookmark, bookmark => bookmark.recipe)
@@ -59,7 +59,7 @@ export class Recipe {
 
   @Field()
   @Column()
-  private: boolean;
+  isPrivate: boolean;
 
   @Field()
   @UpdateDateColumn()

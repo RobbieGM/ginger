@@ -33,12 +33,10 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
     }
   }
   function setImage(files: FileList | null) {
-    console.log('files', files);
     if (files && files[0]) {
       const file = files[0];
       if (['image/png', 'image/jpeg'].includes(file.type)) {
         const url = URL.createObjectURL(file);
-        console.log(url);
         setImageUrl(url);
       }
     }
@@ -81,6 +79,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
         ingredients: ingredients.map(x => x.value),
         directions: steps.map(x => x.value),
         imageURL,
+        isPrivate,
         lastModified: new Date()
       });
     }
@@ -111,6 +110,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
                 onChange={event => setRecipeName(event.target.value)}
                 className='reset'
                 required
+                maxLength={60}
                 placeholder='Recipe Title'
               />
             </h2>
@@ -120,7 +120,6 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
               min={0}
               className={`${classes.timeInput} reset`}
               required
-              value={prepTime}
               onChange={event => setPrepTime(parseInt(event.target.value, 10))}
               placeholder='Prep time (min)'
             />
@@ -129,7 +128,6 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
               min={0}
               className={`${classes.timeInput} reset`}
               required
-              value={cookTime}
               onChange={event => setCookTime(parseInt(event.target.value, 10))}
               placeholder='Cook time (min)'
             />

@@ -1,6 +1,20 @@
 import { useQuery } from 'urql';
 import { Recipe } from '../../store/state';
 
+export const CREATE_RECIPE = `
+  mutation CreateRecipe($recipe: RecipeInput!) {
+    mergeRecipes(recipes: [$recipe]) {
+      id
+    }
+  }
+`;
+
+export const SET_BOOKMARK_DATE = `
+  mutation SetBookmarkDate($date: DateTime, $id: String!) {
+    setBookmarkDate(date: $date, recipeId: $id)
+  }
+`;
+
 /**
  * Fetches recipes with given fields
  *

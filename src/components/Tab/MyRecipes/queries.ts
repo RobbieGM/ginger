@@ -8,19 +8,3 @@ export const GET_MY_RECIPES = `
     }
   }
 `;
-
-const fields: (keyof RecipeInput)[] = [
-  'cookTime',
-  'directions',
-  'imageURL',
-  'ingredients',
-  'lastModified',
-  'name',
-  'prepTime'
-];
-const fieldVariables = fields.map(field => `${field}: $${field}`).join(', ');
-export const CREATE_RECIPE = `
-  mutation {
-    createRecipe(${fieldVariables})
-  }
-`;

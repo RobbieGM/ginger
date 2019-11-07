@@ -1,4 +1,5 @@
 import { RecipeAction } from '../components/Recipe/actions';
+import { ActionType } from './store';
 
 export interface Action<T extends string> {
   type: T;

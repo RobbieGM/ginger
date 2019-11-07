@@ -12,7 +12,7 @@ const SavedTab: React.FC = () => {
     (state: AppState) => state.recipes.filter(recipe => recipe.bookmarkDate),
     deepEqual
   );
-  const { recipes: onlineRecipes, loading } = usePartialRecipes(
+  const { recipes: onlineRecipes, loading, errorOccurred } = usePartialRecipes(
     savedRecipes.map(recipe => recipe.id),
     RECIPE_PREVIEW_FIELDS
   );
@@ -28,6 +28,7 @@ const SavedTab: React.FC = () => {
       <RecipeList
         recipes={recipes}
         loading={loading}
+        errorOccurred={navigator.onLine && errorOccurred}
         errorMessage={
           <>
             We had trouble accessing your saved recipes. If this is because there is missing data,

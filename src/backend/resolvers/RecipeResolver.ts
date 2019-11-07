@@ -17,6 +17,7 @@ import { RecipeInput } from '../api-input/RecipeInput';
 import { Context } from '../Context';
 import { User } from '../data-types/User';
 import { Bookmark } from '../data-types/Bookmark';
+import { Rating } from '../data-types/Rating';
 
 @Service()
 @Resolver(of => Recipe)
@@ -43,24 +44,28 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @Mutation(returns => [Recipe])
-  async mergeRecipes(@Arg('recipes', type => [RecipeInput]) recipes: RecipeInput[]) {
+  async mergeRecipes(
+    @Arg('recipes', type => [RecipeInput]) recipes: RecipeInput[],
+    @Ctx() context: Context
+  ) {
     const updatedRecipesForClient: Recipe[] = [];
-    const updatedRecipesForServer: Recipe[] = [];
-    const existingIdsForServer: string[] = []; // If an id from recipes isn't found in this array, it is new for the server
-
-    const conflictingRecipes = await this.manager.find(Recipe, {
+    const editedRecipes: Recipe[] = [];
+    const allConflictingRecipes = await this.manager.find(Recipe, {
       where: {
         id: recipes.map(r => r.id)
-      }
+      },
+      relations: ['user']
     });
-    conflictingRecipes.forEach(serverRecipe => {
-      existingIdsForServer.push(serverRecipe.id);
+    const conflictingRecipesForUser = allConflictingRecipes.filter(
+      recipe => recipe.user.id === context.userId
+    ); // Consists only of recipes the user may update
+    conflictingRecipesForUser.forEach(serverRecipe => {
       const clientRecipe = recipes.find(r => r.id === serverRecipe.id)!;
       const clientLastModified = new Date(
         Math.max(clientRecipe.lastModified.getTime(), Date.now())
       );
       if (clientLastModified > serverRecipe.lastModified) {
-        updatedRecipesForServer.push({
+        editedRecipes.push({
           ...serverRecipe,
           ...clientRecipe
         });
@@ -68,37 +73,94 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         updatedRecipesForClient.push(serverRecipe);
       }
     });
-
+    editedRecipes.forEach(recipe => {
+      this.manager.save(Recipe, recipe);
+    });
+    const recipeIdExists = (id: string) => allConflictingRecipes.map(r => r.id).includes(id);
+    const createdRecipes = recipes.filter(recipe => !recipeIdExists(recipe.id));
+    createdRecipes.forEach(recipe => {
+      this.manager.save(Recipe, { ...recipe, user: { id: context.userId } });
+    });
     return updatedRecipesForClient;
   }
 
+  @Authorized()
+  @Mutation(returns => Boolean, { nullable: true })
+  async setBookmarkDate(
+    @Arg('recipeId') recipeId: string,
+    @Arg('date', type => Date, { nullable: true }) date: Date | undefined,
+    @Ctx() { userId }: Context
+  ) {
+    const existingBookmarks = await this.manager.find(Bookmark, {
+      where: {
+        recipe: {
+          id: recipeId
+        },
+        user: {
+          id: userId
+        }
+      }
+    });
+    await Promise.all(existingBookmarks.map(bookmark => this.manager.remove(bookmark))); // Remove potential duplicates
+    if (date !== undefined) {
+      this.manager.save(Bookmark, {
+        user: {
+          id: userId
+        },
+        recipe: {
+          id: recipeId
+        },
+        date
+      });
+    }
+  }
+
   @FieldResolver()
-  averageRating(@Root() { ratings }: Recipe): number | undefined {
+  async averageRating(@Root() { id }: Recipe) {
+    const ratings = await this.manager.find(Rating, {
+      where: {
+        recipe: {
+          id
+        }
+      }
+    });
     if (!ratings.length) return undefined;
 
-    const ratingsSum = ratings.reduce((a, b) => a + b.value, 0);
-    return ratingsSum / ratings.length;
+    const sum = ratings.reduce((acc, rating) => acc + rating.value, 0);
+    return sum / ratings.length;
   }
 
   @Authorized()
   @FieldResolver()
-  async bookmarkDate(@Root() recipe: Recipe, @Ctx() context: Context): Promise<Date | undefined> {
+  async bookmarkDate(@Root() { id }: Recipe, @Ctx() context: Context): Promise<Date | undefined> {
     const bookmark = await this.manager.findOne(Bookmark, {
       where: {
         user: {
           id: context.userId
         },
         recipe: {
-          id: recipe.id
+          id
         }
       }
     });
-    return bookmark?.date;
+    return bookmark ? bookmark.date : undefined;
   }
 
   @Authorized()
   @FieldResolver()
-  userRating(@Root() recipe: Recipe, @Ctx() context: Context): number | undefined {
+  async userRating(@Root() { id }: Recipe, @Ctx() context: Context) {
+    if (!context.userId) return undefined;
+    const rating = await this.manager.findOne(Rating, {
+      where: {
+        user: {
+          id: context.userId
+        },
+        recipe: {
+          id
+        }
+      }
+    });
+    if (rating) return rating.value;
     return undefined;
   }
 }

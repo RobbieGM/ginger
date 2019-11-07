@@ -31,6 +31,10 @@ async function bootstrap() {
       return {
         userId: req.cookies.userId
       };
+    },
+    formatError(err) {
+      console.error(err);
+      return process.env.NODE_ENV === 'production' ? new Error('Internal server error') : err;
     }
   });
 

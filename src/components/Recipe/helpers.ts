@@ -1,28 +1,12 @@
-import { Dispatch } from 'redux';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import deepEqual from 'dequal';
 import { UseQueryState } from 'urql';
-import { AppAction } from '../../store/actions';
 import { Recipe } from '../../backend/data-types/Recipe';
 import AppState, { PartialRecipe } from '../../store/state';
 import { mergeRecipes } from './actions';
 import { useRecipesQuery } from './queries';
-
-/**
- * Automatically merges recipes from a list into the store, then returns their ids.
- *
- * @param dispatch The function to dispatch to the store. This is used to persist recipes.
- * @param gen The recipe generator to use.
- */
-export function useMergedRecipeIds(recipes: PartialRecipe[]): string[] {
-  const dispatch = useDispatch<Dispatch<AppAction>>();
-  useEffect(() => {
-    dispatch(mergeRecipes(...recipes));
-  }, [dispatch, recipes]);
-  return recipes.map(r => r.id);
-}
 
 /**
  * Automatically merges recipes from a graphql query once they are loaded, then returns an updating
@@ -33,10 +17,13 @@ export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
   request: UseQueryState<TData>,
   mapDataToResult: (data: TData) => Pick<Recipe, T | 'id'>[]
 ) {
+  type ReturnedRecipe = PartialRecipe & ReturnType<typeof mapDataToResult>[number];
+  const [merged, setMerged] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     if (request.data) {
       dispatch(mergeRecipes(...mapDataToResult(request.data)));
+      setMerged(true);
     }
   }, [dispatch, mapDataToResult, request]);
   const idsOfFetched = request.data
@@ -44,12 +31,8 @@ export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
     : undefined;
   const recipesFromStore = useSelector(
     (state: AppState) =>
-      idsOfFetched
-        ? idsOfFetched.map(
-            id =>
-              state.recipes.find(recipe => recipe.id === id) as PartialRecipe &
-                ReturnType<typeof mapDataToResult>[number]
-          )
+      idsOfFetched && merged
+        ? idsOfFetched.map(id => state.recipes.find(recipe => recipe.id === id) as ReturnedRecipe)
         : undefined,
     deepEqual
   ); // Undefined if not fetched
@@ -64,7 +47,6 @@ export function recipeHasFields<T extends keyof Recipe>(
   recipe: PartialRecipe,
   fields: T[]
 ): recipe is Pick<Recipe, T> & { id: string } {
-  type RequestedRecipeType = Pick<Recipe, T> & { id: string };
   return fields.every(field => field in recipe);
 }
 
@@ -99,7 +81,7 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
   const errorOccurredInQuery = !!missingRecipesQuery.error;
   const [result, setResult] = useState<RecipeResponse>({
     recipes: undefined,
-    loading: true,
+    loading: false,
     errorOccurred: false
   });
   useDeepCompareEffect(() => {

@@ -41,7 +41,6 @@ const App: React.FC<{}> = () => {
     element.parentElement != null ? [element, ...getAllParents(element.parentElement)] : [element];
   const touchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     if (event.nativeEvent.target) {
-      console.log('added touched to', event.nativeEvent.target);
       getAllParents(event.nativeEvent.target as HTMLElement).forEach(elt =>
         elt.setAttribute('touched', 'true')
       );

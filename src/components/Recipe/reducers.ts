@@ -31,13 +31,11 @@ export function recipes(state: PartialRecipe[] = [], action: AppAction): Partial
         }
       }
       return merged;
-    case 'BOOKMARK_RECIPE':
+    case 'SET_BOOKMARK_DATE':
       return state.map(recipe =>
-        recipe.id === action.payload ? { ...recipe, bookmarkDate: new Date() } : recipe
-      );
-    case 'UNBOOKMARK_RECIPE':
-      return state.map(recipe =>
-        recipe.id === action.payload ? { ...recipe, bookmarkDate: undefined } : recipe
+        recipe.id === action.payload.recipeId
+          ? { ...recipe, bookmarkDate: action.payload.date }
+          : recipe
       );
     default:
       return state;

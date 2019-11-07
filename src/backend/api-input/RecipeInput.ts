@@ -1,4 +1,5 @@
 import { InputType, Field, ID } from 'type-graphql';
+import { MaxLength } from 'class-validator';
 import { Recipe } from 'store/state';
 
 @InputType()
@@ -7,7 +8,11 @@ export class RecipeInput implements Partial<Recipe> {
   id: string;
 
   @Field()
+  @MaxLength(60)
   name: string;
+
+  @Field()
+  isPrivate: boolean;
 
   @Field()
   prepTime: number;

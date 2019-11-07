@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import nanoid from 'nanoid';
 import { Plus } from 'react-feather';
 import classNames from 'classnames';
@@ -44,8 +44,13 @@ function useDelayedVisibility(delay: number) {
 const MyRecipesTab: React.FC = () => {
   const dispatch = useDispatch<DispatchType>();
   const { showModalDialog } = useContext(ModalDialogContext);
-  const [queryState] = useQuery<{ myRecipes: RecipePreviewType[] }>({ query: GET_MY_RECIPES });
-  const { recipes, loading } = useMergedRecipesQuery(queryState, data => data.myRecipes);
+  type QueryData = { myRecipes: RecipePreviewType[] };
+  const [queryState] = useQuery<QueryData>({
+    query: GET_MY_RECIPES,
+    requestPolicy: 'network-only'
+  });
+  const dataToRecipes = useCallback((data: QueryData) => data.myRecipes, []);
+  const { recipes, loading, errorOccurred } = useMergedRecipesQuery(queryState, dataToRecipes);
   const {
     mounted: newRecipeFormMounted,
     visible: newRecipeFormOpen,
@@ -57,11 +62,6 @@ const MyRecipesTab: React.FC = () => {
     dispatch(createRecipe(recipeWithId)).then(successful => {
       if (successful) {
         hide();
-        showModalDialog({
-          title: 'Wow',
-          message: <>It actually resolved. Thats bad</>,
-          buttons: ['OK']
-        });
       } else {
         showModalDialog({
           title: 'Error',
@@ -91,6 +91,7 @@ const MyRecipesTab: React.FC = () => {
       <RecipeList
         recipes={recipes}
         loading={loading}
+        errorOccurred={errorOccurred}
         errorMessage={<>An error occurred while fetching your recipes</>}
         emptyState={
           <>
