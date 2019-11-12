@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import classes from './style.module.scss';
 
-interface ModalDialog<TButton> {
+export interface ModalDialog<TButton> {
   title: string;
   message: JSX.Element;
   buttons: TButton[];
@@ -55,7 +55,7 @@ function useMemory<T>(value: T) {
 
 const ModalDialogProvider: React.FC = ({ children }) => {
   const dialogs = useDialogQueue();
-  const rememberedDialog = useMemory(dialogs.current);
+  const visibleDialog = useMemory(dialogs.current);
   return (
     <ModalDialogContext.Provider
       value={{
@@ -70,18 +70,18 @@ const ModalDialogProvider: React.FC = ({ children }) => {
       <div className={classNames(classes.modalOverlay, dialogs.current && classes.active)} />
       <div className={classNames(classes.modalDialog, dialogs.current && classes.active)}>
         <div className={classes.dialogContent}>
-          <h2>{rememberedDialog && rememberedDialog.title}</h2>
-          {rememberedDialog && rememberedDialog.message}
+          <h2>{visibleDialog && visibleDialog.title}</h2>
+          {visibleDialog && visibleDialog.message}
         </div>
         <div className={classes.buttons}>
-          {rememberedDialog &&
-            rememberedDialog.buttons.map((button, i) => (
+          {visibleDialog &&
+            visibleDialog.buttons.map((button, i) => (
               <button
                 onClick={() => dialogs.dismiss(button)}
                 key={button}
                 className={
-                  i === rememberedDialog.buttons.length - 1 && rememberedDialog.lastButtonClass
-                    ? classes[rememberedDialog.lastButtonClass]
+                  i === visibleDialog.buttons.length - 1 && visibleDialog.lastButtonClass
+                    ? classes[visibleDialog.lastButtonClass]
                     : undefined
                 }
               >

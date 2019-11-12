@@ -1,6 +1,5 @@
 import React from 'react';
 import { Icon } from 'react-feather';
-import classNames from 'classnames';
 import RippleButton from './RippleButton';
 import classes from './style.module.scss';
 

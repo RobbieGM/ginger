@@ -6,7 +6,12 @@ import classes from './style.module.scss';
 
 const DragHandle = SortableHandle(() => (
   // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-  <div className={`${classes.iconContainer} ${classes.dragHandle}`} tabIndex={0}>
+  <div
+    className={`${classes.iconContainer} ${classes.dragHandle}`}
+    tabIndex={0}
+    aria-label='Move'
+    role='button'
+  >
     <Move />
   </div>
 ));
@@ -36,7 +41,12 @@ const ListItem: React.FC<Props> = ({
   <div className={classNames(classes.listItem, { [classes.stub]: isStub })}>
     {!isStub && (
       <div className={classes.buttonContainer}>
-        <button type='button' className={classes.iconContainer} onClick={onRemove}>
+        <button
+          type='button'
+          className={classes.iconContainer}
+          onClick={onRemove}
+          aria-label='Remove'
+        >
           <X />
         </button>
         <DragHandle />
