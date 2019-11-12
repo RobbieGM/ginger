@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
-import PopularTab from 'components/Tab/Popular';
-import ModalDialogProvider from 'components/ModalDialogProvider';
+import PopularTab from '../Tab/Popular';
+import ModalDialogProvider from '../ModalDialogProvider';
 import classes from './style.module.scss';
 import BottomNavigation, { Tab } from '../BottomNavigation';
 import SavedTab from '../Tab/SavedTab';

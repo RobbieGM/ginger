@@ -143,7 +143,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         }
       }
     });
-    return bookmark ? bookmark.date : undefined;
+    return bookmark?.date;
   }
 
   @Authorized()

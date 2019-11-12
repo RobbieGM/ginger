@@ -9,7 +9,8 @@
   "env": {
     "browser": true,
     "node": true,
-    "jest": true
+    "jest": true,
+    "jasmine": true
   },
   "settings": {
     "import/parsers": {
@@ -50,7 +51,7 @@
     "import/no-extraneous-dependencies": [
       2,
       {
-        "devDependencies": ["**/test.tsx", "**/test.ts"]
+        "devDependencies": ["**/*test.tsx", "**/*test.ts"]
       }
     ]
   }

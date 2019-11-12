@@ -33,7 +33,7 @@ function useAuth() {
           }
         })
         .catch(error => {
-          console.error(error);
+          console.error('Error occurred while creating account', error);
           setState(AuthState.FAILED);
         });
     }

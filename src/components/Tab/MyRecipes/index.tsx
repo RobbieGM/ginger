@@ -6,7 +6,7 @@ import { useQuery } from 'urql';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
 import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
-import { ModalDialogContext } from 'components/ModalDialogProvider';
+import { ModalDialogContext } from '../../ModalDialogProvider';
 import RecipeList from '../../Recipe/List';
 import baseClasses from '../style.module.scss';
 import myRecipesClasses from './style.module.scss';
