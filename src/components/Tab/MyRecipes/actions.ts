@@ -3,7 +3,7 @@ import { ActionType } from 'store/store';
 import { OperationResult } from 'urql';
 import { PartialRecipe } from 'store/state';
 import { mergeRecipes } from 'components/Recipe/actions';
-import { RecipePreviewType } from 'components/Recipe/List/queries';
+import { RecipePreview } from 'components/Recipe/List/queries';
 import { CREATE_RECIPE } from 'components/Recipe/queries';
 
 /**
@@ -26,7 +26,7 @@ export const createRecipe = (
     console.error(result.error);
     return false;
   }
-  const offlineRecipe: RecipeInput & RecipePreviewType = {
+  const offlineRecipe: RecipeInput & RecipePreview = {
     averageRating: undefined,
     userRating: undefined,
     bookmarkDate: new Date(),

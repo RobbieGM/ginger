@@ -3,14 +3,14 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Bookmark, Star, Clock } from 'react-feather';
 import classes from './style.module.scss';
-import { createStoreWithClient, DispatchType } from '../../../store/store';
+import { DispatchType } from '../../../store/store';
 import { Recipe } from '../../../backend/data-types/Recipe';
-import { RecipePreviewType } from './queries';
+import { RecipePreview } from './queries';
 import { setBookmarkDate } from '../actions';
 import { ReactComponent as Loading } from '../../../assets/loading.svg';
 
 interface Props {
-  recipes: RecipePreviewType[] | undefined;
+  recipes: RecipePreview[] | undefined;
   loading: boolean;
   errorOccurred: boolean;
   errorMessage: JSX.Element;
@@ -18,7 +18,7 @@ interface Props {
   /**
    * A function called to load more recipes into the RecipeList, used for infinite scrolling.
    */
-  loadMore: () => Promise<RecipePreviewType[]>;
+  loadMore: () => Promise<RecipePreview[]>;
 }
 
 /**
@@ -62,17 +62,18 @@ const RecipeList: React.FC<Props> = ({
                     [classes.bookmarked]: recipe.bookmarkDate
                   })}
                   onClick={() => toggleBookmark(recipe)}
+                  aria-label='Save'
                 >
                   <Bookmark />
                 </button>
                 <div className={classes.bottomContent}>
                   <h3>{recipe.name}</h3>
                   <div className={classes.recipeMetadata}>
-                    <div className={classes.star}>
+                    <div className={classes.star} aria-label='Average rating'>
                       <Star />
                       {recipe.averageRating}
                     </div>
-                    <div>
+                    <div aria-label='Total time'>
                       <Clock />
                       {recipe.prepTime + recipe.cookTime}
                     </div>
@@ -88,7 +89,7 @@ const RecipeList: React.FC<Props> = ({
       ) : errorOccurred ? (
         errorMessage
       ) : (
-        undefined
+        <span style={{ display: 'none' }}>This error should not show</span>
       )}
     </div>
   );

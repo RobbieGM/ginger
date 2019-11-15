@@ -14,4 +14,4 @@ export const RECIPE_PREVIEW_FIELDS = tuple(
 );
 
 export type RECIPE_PREVIEW_FIELD_TYPE = typeof RECIPE_PREVIEW_FIELDS[number];
-export type RecipePreviewType = Pick<Recipe, RECIPE_PREVIEW_FIELD_TYPE>;
+export type RecipePreview = Pick<Recipe, RECIPE_PREVIEW_FIELD_TYPE>;

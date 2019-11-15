@@ -87,13 +87,12 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
   return (
     <div className={classes.recipeEditorContainer}>
       <div className={classes.topBar}>
-        <button className={classes.closeButton} onClick={close}>
+        <button className={classes.closeButton} onClick={close} aria-label='Close'>
           <X />
         </button>
         {intent === 'create' ? 'Create recipe' : 'Edit recipe'}
       </div>
       <form
-        action='#'
         className={classNames(
           classes.form,
           submitAttempted && [classes.submitAttempted, listEditorClasses.showInvalid]

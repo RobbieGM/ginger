@@ -10,7 +10,7 @@ import { ModalDialogContext } from '../../ModalDialogProvider';
 import RecipeList from '../../Recipe/List';
 import baseClasses from '../style.module.scss';
 import myRecipesClasses from './style.module.scss';
-import { RecipePreviewType } from '../../Recipe/List/queries';
+import { RecipePreview } from '../../Recipe/List/queries';
 import { GET_MY_RECIPES } from './queries';
 import { useMergedRecipesQuery } from '../../Recipe/helpers';
 import RecipeEditor from '../../Recipe/Editor';
@@ -44,7 +44,7 @@ function useDelayedVisibility(delay: number) {
 const MyRecipesTab: React.FC = () => {
   const dispatch = useDispatch<DispatchType>();
   const { showModalDialog } = useContext(ModalDialogContext);
-  type QueryData = { myRecipes: RecipePreviewType[] };
+  type QueryData = { myRecipes: RecipePreview[] };
   const [queryState] = useQuery<QueryData>({
     query: GET_MY_RECIPES,
     requestPolicy: 'network-only'
@@ -57,32 +57,32 @@ const MyRecipesTab: React.FC = () => {
     show,
     hide
   } = useDelayedVisibility(200);
-  function onSubmit(recipeData: Omit<RecipeInput, 'id'>) {
+  async function onSubmit(recipeData: Omit<RecipeInput, 'id'>) {
     const recipeWithId = { id: nanoid(), ...recipeData };
-    dispatch(createRecipe(recipeWithId)).then(successful => {
-      if (successful) {
-        hide();
-      } else {
-        showModalDialog({
-          title: 'Error',
-          message: (
-            <p>
-              Your recipe couldn&apos;t be saved to the server. You can cancel, try again, or save
-              it offline (it will go to your saved folder and be auto-synced later).
-            </p>
-          ),
-          buttons: ['Cancel', 'Save offline', 'Retry'],
-          lastButtonClass: 'blue'
-        }).then(button => {
-          if (button === 'Retry') {
-            onSubmit(recipeData);
-          }
-          if (button === 'Save offline') {
-            dispatch(createRecipe(recipeWithId, true));
-          }
-        });
-      }
-    });
+    const successful = dispatch(createRecipe(recipeWithId));
+    if (successful) {
+      hide();
+    } else {
+      showModalDialog({
+        title: 'Error',
+        message: (
+          <p>
+            Your recipe couldn&apos;t be saved to the server. You can cancel, try again, or save it
+            offline (it will go to your saved folder and be auto-synced later).
+          </p>
+        ),
+        buttons: ['Cancel', 'Save offline', 'Retry'],
+        lastButtonClass: 'blue'
+      }).then(button => {
+        if (button === 'Retry') {
+          onSubmit(recipeData);
+        }
+        if (button === 'Save offline') {
+          dispatch(createRecipe(recipeWithId, true));
+          hide();
+        }
+      });
+    }
   }
 
   return (
@@ -101,7 +101,11 @@ const MyRecipesTab: React.FC = () => {
         }
         loadMore={async () => []}
       />
-      <button className={myRecipesClasses.addButtonContainer} onClick={() => show()}>
+      <button
+        className={myRecipesClasses.addButtonContainer}
+        onClick={() => show()}
+        aria-label='Create recipe'
+      >
         <Plus size={24} />
       </button>
       <div

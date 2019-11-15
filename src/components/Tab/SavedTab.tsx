@@ -5,7 +5,7 @@ import RecipeList from '../Recipe/List';
 import AppState from '../../store/state';
 import classes from './style.module.scss';
 import { usePartialRecipes, recipeHasFields } from '../Recipe/helpers';
-import { RECIPE_PREVIEW_FIELDS, RecipePreviewType } from '../Recipe/List/queries';
+import { RECIPE_PREVIEW_FIELDS, RecipePreview } from '../Recipe/List/queries';
 
 const SavedTab: React.FC = () => {
   const savedRecipes = useSelector(
@@ -18,7 +18,7 @@ const SavedTab: React.FC = () => {
   );
   const recipes = navigator.onLine
     ? onlineRecipes
-    : savedRecipes.filter((recipe): recipe is RecipePreviewType =>
+    : savedRecipes.filter((recipe): recipe is RecipePreview =>
         recipeHasFields(recipe, RECIPE_PREVIEW_FIELDS)
       );
 
@@ -43,8 +43,6 @@ const SavedTab: React.FC = () => {
         }
         loadMore={async () => []}
       />
-
-      {/* JSON.stringify(savedRecipes) */}
     </div>
   );
 };
