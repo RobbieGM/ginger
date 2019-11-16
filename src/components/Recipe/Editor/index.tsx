@@ -97,9 +97,9 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
           classes.form,
           submitAttempted && [classes.submitAttempted, listEditorClasses.showInvalid]
         )}
-        onSubmit={() => {
+        onSubmit={event => {
           submit();
-          return false;
+          event.preventDefault();
         }}
       >
         <section className={classes.basicInfo}>

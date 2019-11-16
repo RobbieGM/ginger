@@ -16,13 +16,13 @@ const BottomNavigationRippleButton: React.FC<ButtonProps & { selected: boolean }
   const [rippleFill, setRippleFill] = useState<'filled' | 'transparent'>('transparent');
   const [mouseDownTime, setMouseDownTime] = useState(0);
   const [resetRippleTimeout, setResetRippleTimeout] = useState(0);
-  function mouseDown() {
+  function highlight() {
     clearTimeout(resetRippleTimeout);
     setRippleFill('filled');
     setRippleSize('large');
     setMouseDownTime(Date.now());
   }
-  function mouseUp() {
+  function unhighlight() {
     window.setTimeout(() => {
       setRippleFill('transparent');
       const id = window.setTimeout(() => {
@@ -39,13 +39,14 @@ const BottomNavigationRippleButton: React.FC<ButtonProps & { selected: boolean }
         [classes.filledRipple]: rippleFill === 'filled'
       })}
       onClick={onClick}
-      onTouchStart={mouseDown}
-      onMouseDown={mouseDown}
-      onFocus={mouseDown}
-      onTouchEnd={mouseUp}
-      onTouchCancel={mouseUp}
-      onMouseUp={mouseUp}
-      onMouseLeave={mouseUp}
+      onTouchStart={highlight}
+      onMouseDown={highlight}
+      onFocus={highlight}
+      onTouchEnd={unhighlight}
+      onTouchCancel={unhighlight}
+      onMouseUp={unhighlight}
+      onMouseLeave={unhighlight}
+      onBlur={unhighlight}
     >
       {children}
     </button>

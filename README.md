@@ -14,4 +14,3 @@ A simple recipe manager to learn React, Redux, GraphQL, TypeORM, and TDD.
   - Replace React with Preact
   - Replace Apollo with something lighter
   - Code splitting on tabs
-- Test coverage

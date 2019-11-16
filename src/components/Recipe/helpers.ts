@@ -89,7 +89,7 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
       const fetchedData = missingRecipesQuery.data;
       const findInStoreOrFetched = (id: string): RequestedRecipeType | undefined => {
         const fromStore = storedRecipesWithAllFields.find(r => r.id === id);
-        const fromFetch = fetchedData ? fetchedData.find(r => r.id === id) : undefined;
+        const fromFetch = fetchedData?.find(r => r.id === id);
         return fromStore || fromFetch;
       };
       setResult({
