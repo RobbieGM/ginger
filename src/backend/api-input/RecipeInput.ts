@@ -1,10 +1,11 @@
-import { InputType, Field, ID } from 'type-graphql';
-import { MaxLength } from 'class-validator';
+import { InputType, Field, ID, Int } from 'type-graphql';
+import { MaxLength, Matches } from 'class-validator';
 import { Recipe } from 'store/state';
 
 @InputType()
 export class RecipeInput implements Partial<Recipe> {
   @Field(type => ID)
+  @Matches(/^A-Za-z0-9_-$/)
   id: string;
 
   @Field()
@@ -19,6 +20,9 @@ export class RecipeInput implements Partial<Recipe> {
 
   @Field()
   cookTime: number;
+
+  @Field(type => Int)
+  servings: number;
 
   @Field(type => [String])
   ingredients: string[];

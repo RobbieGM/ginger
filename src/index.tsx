@@ -6,6 +6,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import AuthenticationGate from 'components/AuthenticationGate';
 import { createClient, Provider as ClientProvider } from 'urql';
+import HistoryProvider from 'components/HistoryProvider';
 import { createStoreWithClient } from './store/store';
 import * as serviceWorker from './serviceWorker';
 import App from './components/App';
@@ -24,11 +25,13 @@ const { store, persistor } = createStoreWithClient(apiClient);
 ReactDOM.render(
   <ClientProvider value={apiClient}>
     <AuthenticationGate>
-      <ReduxProvider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </ReduxProvider>
+      <HistoryProvider>
+        <ReduxProvider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </ReduxProvider>
+      </HistoryProvider>
     </AuthenticationGate>
   </ClientProvider>,
   document.getElementById('root')

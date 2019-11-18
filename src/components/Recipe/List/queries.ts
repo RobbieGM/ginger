@@ -10,7 +10,8 @@ export const RECIPE_PREVIEW_FIELDS = tuple(
   'averageRating',
   'userRating',
   'prepTime',
-  'cookTime'
+  'cookTime',
+  'servings'
 );
 
 export type RECIPE_PREVIEW_FIELD_TYPE = typeof RECIPE_PREVIEW_FIELDS[number];

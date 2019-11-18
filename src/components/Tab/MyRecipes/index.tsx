@@ -1,45 +1,21 @@
-import React, { useState, useContext, useCallback } from 'react';
-import nanoid from 'nanoid';
-import { Plus } from 'react-feather';
-import classNames from 'classnames';
-import { useQuery } from 'urql';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
+import classNames from 'classnames';
+import { useDelayedVisibility } from 'helpers';
+import nanoid from 'nanoid';
+import React, { useCallback, useContext } from 'react';
+import { Plus } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
+import { useQuery } from 'urql';
 import { ModalDialogContext } from '../../ModalDialogProvider';
-import RecipeList from '../../Recipe/List';
-import baseClasses from '../style.module.scss';
-import myRecipesClasses from './style.module.scss';
-import { RecipePreview } from '../../Recipe/List/queries';
-import { GET_MY_RECIPES } from './queries';
-import { useMergedRecipesQuery } from '../../Recipe/helpers';
 import RecipeEditor from '../../Recipe/Editor';
+import { useMergedRecipesQuery } from '../../Recipe/helpers';
+import RecipeList from '../../Recipe/List';
+import { RecipePreview } from '../../Recipe/List/queries';
+import baseClasses from '../style.module.scss';
 import { createRecipe } from './actions';
-
-/**
- * Used to see if a component may be visible, given a delay to account for time it takes to animate out.
- * @param delay
- */
-function useDelayedVisibility(delay: number) {
-  const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [timeoutId, setTimeoutId] = useState(-1);
-  return {
-    visible,
-    mounted,
-    show() {
-      setMounted(true);
-      setVisible(true);
-      clearTimeout(timeoutId);
-    },
-    hide() {
-      setVisible(false);
-      const id = window.setTimeout(() => setMounted(false), delay);
-      setTimeoutId(id);
-      clearTimeout(timeoutId);
-    }
-  };
-}
+import { GET_MY_RECIPES } from './queries';
+import myRecipesClasses from './style.module.scss';
 
 const MyRecipesTab: React.FC = () => {
   const dispatch = useDispatch<DispatchType>();

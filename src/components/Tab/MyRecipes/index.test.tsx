@@ -5,7 +5,7 @@ import MyRecipesTab from '.';
 
 jest.useFakeTimers();
 
-it.only('waits before unmounting the component', async () => {
+it('waits before unmounting the component', async () => {
   const { findByLabelText } = render(
     <Provider>
       <MyRecipesTab />
@@ -21,5 +21,3 @@ it.only('waits before unmounting the component', async () => {
   });
   expect(findByLabelText('Close')).rejects.toBeTruthy();
 });
-
-it('opens a recipe editor when the FAB is clicked', () => {});

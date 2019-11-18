@@ -22,7 +22,11 @@
   padding: 12px;
   border-radius: 12px;
   color: white;
-  box-shadow: 0 -150px 80px -80px rgba(0, 0, 0, 0.3) inset, $shadow-high;
+  $scrim: 0 -150px 80px -80px rgba(0, 0, 0, 0.3) inset;
+  box-shadow: $scrim, $shadow-high;
+  &:focus {
+    box-shadow: $scrim, $shadow-highest;
+  }
   .bookmarkIcon {
     align-self: flex-end;
     background: $translucent-white;

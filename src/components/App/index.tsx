@@ -1,69 +1,41 @@
-import React, { useState } from 'react';
-import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
-import PopularTab from '../Tab/Popular';
-import ModalDialogProvider from '../ModalDialogProvider';
+import React, { useEffect, useState, useContext } from 'react';
+import TabSwitcher from 'components/TabSwitcher';
+import { animatable } from 'helpers';
+import { History } from 'history';
+import RecipeView from 'components/Recipe/View';
+import { HistoryContext } from 'components/HistoryProvider';
 import classes from './style.module.scss';
-import BottomNavigation, { Tab } from '../BottomNavigation';
-import SavedTab from '../Tab/SavedTab';
-import MyRecipesTab from '../Tab/MyRecipes';
+import ModalDialogProvider from '../ModalDialogProvider';
+import { touchEnd, touchStart } from './instant-touch';
 
-const tabs: Tab[] = [
-  {
-    label: 'Saved',
-    icon: Bookmark,
-    component: <SavedTab />
-  },
-  {
-    label: 'My Recipes',
-    icon: BookOpen,
-    component: <MyRecipesTab />
-  },
-  {
-    label: 'Popular',
-    icon: TrendingUp,
-    component: <PopularTab />
-  },
-  {
-    label: 'New',
-    icon: Award,
-    component: <SavedTab />
-  },
-  {
-    label: 'Search',
-    icon: Search,
-    component: <SavedTab />
-  }
-];
+const AnimatableRecipeView = animatable(
+  RecipeView,
+  (props): props is { recipeId: string } => typeof props.recipeId == 'string',
+  200,
+  classes.recipeViewContainer,
+  classes.hidden
+);
+
+function useLocation(browserHistory: History) {
+  const [loc, setLoc] = useState(browserHistory.location);
+  useEffect(() => {
+    const cleanup = browserHistory.listen(l => setLoc(l));
+    return cleanup;
+  }, [browserHistory]);
+  return loc;
+}
 
 const App: React.FC<{}> = () => {
-  const [tab, setTab] = useState(0);
-  const getAllParents = (element: HTMLElement): HTMLElement[] =>
-    element.parentElement != null ? [element, ...getAllParents(element.parentElement)] : [element];
-  const touchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (event.nativeEvent.target) {
-      getAllParents(event.nativeEvent.target as HTMLElement).forEach(elt =>
-        elt.setAttribute('touched', 'true')
-      );
-    }
-  };
-  const touchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (event.nativeEvent.target) {
-      getAllParents(event.nativeEvent.target as HTMLElement).forEach(elt =>
-        elt.removeAttribute('touched')
-      );
-    }
-  };
+  const browserHistory = useContext(HistoryContext);
+  const loc = useLocation(browserHistory);
+  const path = loc.pathname.split('/').slice(1);
+  console.warn(path);
+  const recipeId = path[0] === 'recipe' && path[1] ? path[1] : undefined;
   return (
-    <div
-      className={classes.app}
-      id='app'
-      onTouchStart={touchStart}
-      onTouchEnd={touchEnd}
-      onTouchCancel={touchEnd}
-    >
+    <div id='app' onTouchStart={touchStart} onTouchEnd={touchEnd} onTouchCancel={touchEnd}>
       <ModalDialogProvider>
-        {tabs[tab].component}
-        <BottomNavigation tabs={tabs} selectedTabIndex={tab} setTab={setTab} />
+        <TabSwitcher />
+        <AnimatableRecipeView recipeId={recipeId} />
       </ModalDialogProvider>
     </div>
   );

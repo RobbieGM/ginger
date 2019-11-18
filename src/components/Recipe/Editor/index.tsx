@@ -6,6 +6,7 @@ import { KeyedList } from 'components/ListEditor/types';
 import { ModalDialogContext } from 'components/ModalDialogProvider';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
 import classes from './style.module.scss';
+import topBarClasses from '../../../top-bar.module.scss';
 import listEditorClasses from '../../ListEditor/style.module.scss';
 import VisibilityChooser from './VisibilityChooser';
 
@@ -21,6 +22,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
   const [imageURL, setImageUrl] = useState('');
   const [prepTime, setPrepTime] = useState<number | undefined>();
   const [cookTime, setCookTime] = useState<number | undefined>();
+  const [servings, setServings] = useState<number | undefined>();
   const [ingredients, setIngredients] = useState([] as KeyedList<string>);
   const [steps, setSteps] = useState([] as KeyedList<string>);
 
@@ -69,6 +71,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
       recipeName &&
       prepTime != null &&
       cookTime != null &&
+      servings != null &&
       ingredients.length > 0 &&
       steps.length > 0
     ) {
@@ -76,6 +79,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
         name: recipeName,
         prepTime,
         cookTime,
+        servings,
         ingredients: ingredients.map(x => x.value),
         directions: steps.map(x => x.value),
         imageURL,
@@ -86,8 +90,8 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
   }
   return (
     <div className={classes.recipeEditorContainer}>
-      <div className={classes.topBar}>
-        <button className={classes.closeButton} onClick={close} aria-label='Close'>
+      <div className={topBarClasses.topBar}>
+        <button className={topBarClasses.button} onClick={close} aria-label='Close'>
           <X />
         </button>
         {intent === 'create' ? 'Create recipe' : 'Edit recipe'}
@@ -117,7 +121,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
             <input
               type='number'
               min={0}
-              className={`${classes.timeInput} reset`}
+              className={`${classes.input} reset`}
               required
               onChange={event => setPrepTime(parseInt(event.target.value, 10))}
               placeholder='Prep time (min)'
@@ -125,10 +129,18 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
             <input
               type='number'
               min={0}
-              className={`${classes.timeInput} reset`}
+              className={`${classes.input} reset`}
               required
               onChange={event => setCookTime(parseInt(event.target.value, 10))}
               placeholder='Cook time (min)'
+            />
+            <input
+              type='number'
+              min={0}
+              className={`${classes.input} reset`}
+              required
+              onChange={event => setServings(parseInt(event.target.value, 10))}
+              placeholder='Servings'
             />
           </div>
           <div>

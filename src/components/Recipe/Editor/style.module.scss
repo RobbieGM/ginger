@@ -12,43 +12,12 @@ $max-width: 500px;
   overflow-y: auto;
 }
 
-.topBar {
-  position: sticky;
-  display: flex;
-  align-items: center;
-  top: 0;
-  z-index: 2;
-  height: 48px;
-  background: $translucent-white;
-  box-shadow: $shadow-medium;
-  .closeButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    box-sizing: border-box;
-    padding: 12px;
-    margin-right: 12px;
-    color: black;
-    opacity: 0.8;
-    cursor: pointer;
-    transition-duration: 0.2s;
-    &:active,
-    &[touched],
-    &[data-focus-visible-added] {
-      opacity: 0.4;
-      transition-duration: 0s;
-    }
-  }
-}
-
 .form {
   &.submitAttempted {
     h2 input:invalid {
       box-shadow: 0 -5px 5px -5px $red inset;
     }
-    .timeInput:invalid {
+    .input:invalid {
       &:invalid {
         box-shadow: 0 0 3px $red inset;
       }
@@ -137,7 +106,7 @@ $max-width: 500px;
 
 .otherMetadata {
   flex: 1;
-  input.timeInput {
+  input.input {
     -moz-appearance: textfield;
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
@@ -160,7 +129,7 @@ $max-width: 500px;
         text-align: center;
       }
     }
-    input.timeInput {
+    input.input {
       margin-bottom: 0;
       margin-right: auto;
       margin-left: auto;

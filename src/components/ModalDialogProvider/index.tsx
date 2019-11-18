@@ -1,5 +1,6 @@
-import React, { createContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useState } from 'react';
 import classNames from 'classnames';
+import { useMemory } from 'helpers';
 import classes from './style.module.scss';
 
 export interface ModalDialog<TButton> {
@@ -38,19 +39,6 @@ function useDialogQueue() {
     },
     current: queue[0] // May represent a past dialog
   };
-}
-
-/**
- * Returns a value, or what it was before if it's undefined or null.
- */
-function useMemory<T>(value: T) {
-  const memory = useRef<T | undefined>(value);
-  useEffect(() => {
-    if (value != null) {
-      memory.current = value;
-    }
-  }, [value]);
-  return value || memory.current;
 }
 
 const ModalDialogProvider: React.FC = ({ children }) => {

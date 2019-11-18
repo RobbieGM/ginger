@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Bookmark, Star, Clock } from 'react-feather';
+import { HistoryContext } from 'components/HistoryProvider';
 import classes from './style.module.scss';
 import { DispatchType } from '../../../store/store';
 import { Recipe } from '../../../backend/data-types/Recipe';
@@ -38,6 +39,8 @@ const RecipeList: React.FC<Props> = ({
   const toggleBookmark = (recipe: Pick<Recipe, 'id' | 'bookmarkDate'>) => {
     dispatch(setBookmarkDate(recipe.id, recipe.bookmarkDate ? undefined : new Date()));
   };
+  const browserHistory = useContext(HistoryContext);
+  const viewRecipe = (id: string) => browserHistory.push(`/recipe/${id}`);
 
   useEffect(() => {
     loadMore();
@@ -56,12 +59,19 @@ const RecipeList: React.FC<Props> = ({
                 className={classes.recipeCard}
                 key={recipe.id}
                 style={recipe.imageURL ? { backgroundImage: `url(${recipe.imageURL})` } : {}}
+                tabIndex={0}
+                onClick={() => viewRecipe(recipe.id)}
+                onKeyDown={event => event.key === 'Enter' && viewRecipe(recipe.id)}
+                role='button'
               >
                 <button
                   className={classNames(classes.bookmarkIcon, {
                     [classes.bookmarked]: recipe.bookmarkDate
                   })}
-                  onClick={() => toggleBookmark(recipe)}
+                  onClick={event => {
+                    toggleBookmark(recipe);
+                    event.stopPropagation();
+                  }}
                   aria-label='Save'
                 >
                   <Bookmark />
@@ -69,10 +79,12 @@ const RecipeList: React.FC<Props> = ({
                 <div className={classes.bottomContent}>
                   <h3>{recipe.name}</h3>
                   <div className={classes.recipeMetadata}>
-                    <div className={classes.star} aria-label='Average rating'>
-                      <Star />
-                      {recipe.averageRating}
-                    </div>
+                    {recipe.averageRating && (
+                      <div className={classes.star} aria-label='Average rating'>
+                        <Star />
+                        {recipe.averageRating}
+                      </div>
+                    )}
                     <div aria-label='Total time'>
                       <Clock />
                       {recipe.prepTime + recipe.cookTime}

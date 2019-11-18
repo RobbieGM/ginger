@@ -15,7 +15,6 @@ import { EntityManager } from 'typeorm';
 import { Recipe } from '../data-types/Recipe';
 import { RecipeInput } from '../api-input/RecipeInput';
 import { Context } from '../Context';
-import { User } from '../data-types/User';
 import { Bookmark } from '../data-types/Bookmark';
 import { Rating } from '../data-types/Rating';
 
@@ -32,14 +31,17 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   @Authorized()
   @Query(returns => [Recipe])
   async myRecipes(@Ctx() context: Context) {
-    const user = await this.manager.findOneOrFail(User, {
+    const recipes = this.manager.find(Recipe, {
       where: {
-        id: context.userId
+        user: {
+          id: context.userId
+        }
       },
-      relations: ['recipes']
+      order: {
+        lastModified: 'DESC'
+      }
     });
-    console.log('user', user);
-    return user.recipes;
+    return recipes;
   }
 
   @Authorized()

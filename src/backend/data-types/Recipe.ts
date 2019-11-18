@@ -45,6 +45,10 @@ export class Recipe {
   @Column()
   cookTime: number;
 
+  @Field()
+  @Column()
+  servings: number;
+
   @Field(type => [String])
   @Column('simple-json')
   ingredients: string[];
