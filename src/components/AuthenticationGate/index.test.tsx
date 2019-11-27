@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, cleanup, RenderResult } from '@testing-library/react';
 // eslint-disable-next-line import/no-duplicates
-import { createClient, Provider, OperationResult, UseMutationState, useMutation } from 'urql';
+import { createClient, Provider, OperationResult, UseMutationState } from 'urql';
 import { act } from 'react-dom/test-utils';
 // eslint-disable-next-line import/no-duplicates
 import Urql from 'urql';

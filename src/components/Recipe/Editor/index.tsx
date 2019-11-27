@@ -3,7 +3,7 @@ import { X, Image, Check } from 'react-feather';
 import classNames from 'classnames';
 import ListEditor from 'components/ListEditor';
 import { KeyedList } from 'components/ListEditor/types';
-import { ModalDialogContext } from 'components/CoreUIProvider';
+import { CoreUIContext } from 'components/CoreUIProvider';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
 import classes from './style.module.scss';
 import topBarClasses from '../../../top-bar.module.scss';
@@ -24,11 +24,11 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
   const [cookTime, setCookTime] = useState<number | undefined>();
   const [servings, setServings] = useState<number | undefined>();
   const [ingredients, setIngredients] = useState([] as KeyedList<string>);
-  const [steps, setSteps] = useState([] as KeyedList<string>);
+  const [directions, setSteps] = useState([] as KeyedList<string>);
 
   const imageInput = useRef<HTMLInputElement>(null);
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  const { showModalDialog } = useContext(ModalDialogContext);
+  const { showModalDialog } = useContext(CoreUIContext);
   function promptImageFileInput() {
     if (imageInput && imageInput.current) {
       imageInput.current.click();
@@ -50,7 +50,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
       prepTime,
       cookTime,
       ingredients.length,
-      steps.length
+      directions.length
     ].some(x => x);
     if (hasUnsavedData) {
       const result = await showModalDialog({
@@ -73,7 +73,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
       cookTime != null &&
       servings != null &&
       ingredients.length > 0 &&
-      steps.length > 0
+      directions.length > 0
     ) {
       onSubmit({
         name: recipeName,
@@ -81,7 +81,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
         cookTime,
         servings,
         ingredients: ingredients.map(x => x.value),
-        directions: steps.map(x => x.value),
+        directions: directions.map(x => x.value),
         imageURL,
         isPrivate,
         lastModified: Date.now()
@@ -175,7 +175,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
         />
         <h3>Preparation</h3>
         <ListEditor
-          list={steps}
+          list={directions}
           setList={setSteps}
           type='ordered'
           required

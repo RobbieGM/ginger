@@ -18,7 +18,7 @@ interface ContextType {
   showModalDialog: <TButton extends string>(dialog: ModalDialog<TButton>) => Promise<TButton>;
 }
 
-export const ModalDialogContext = createContext({} as ContextType);
+export const CoreUIContext = createContext({} as ContextType);
 
 function useDialogQueue() {
   type QueuedDialog = ModalDialog<string> & {
@@ -67,7 +67,7 @@ const CoreUIProvider: React.FC = ({ children }) => {
   const visibleDialog = useMemory(dialogs.current);
   const { snackbar, visible } = useCurrentSnackbar();
   return (
-    <ModalDialogContext.Provider
+    <CoreUIContext.Provider
       value={{
         showModalDialog<TButton extends string>(dialog: ModalDialog<TButton>) {
           return new Promise<TButton>(resolve => {
@@ -104,7 +104,7 @@ const CoreUIProvider: React.FC = ({ children }) => {
         {snackbar}
         <button onClick={() => dispatch(dismissSnackbar())}>OK</button>
       </div>
-    </ModalDialogContext.Provider>
+    </CoreUIContext.Provider>
   );
 };
 

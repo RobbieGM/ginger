@@ -13,6 +13,9 @@ interface Props {
 }
 
 export const Provider: React.FC<Props> = ({ rootReducer, children }) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('The mono-provider is not to be used outside a test environment.');
+  }
   const [apiClient] = useState(createClient.bind(null, { url: '' }));
   const [{ store, persistor }] = useState(createStoreWithClient.bind(null, apiClient));
   useEffect(() => {

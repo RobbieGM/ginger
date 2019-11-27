@@ -7,7 +7,7 @@ import { Plus } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
 import { useQuery } from 'urql';
-import { ModalDialogContext } from '../../CoreUIProvider';
+import { CoreUIContext } from '../../CoreUIProvider';
 import RecipeEditor from '../../Recipe/Editor';
 import { useMergedRecipesQuery } from '../../Recipe/helpers';
 import RecipeList from '../../Recipe/List';
@@ -19,7 +19,7 @@ import myRecipesClasses from './style.module.scss';
 
 const MyRecipesTab: React.FC = () => {
   const dispatch = useDispatch<DispatchType>();
-  const { showModalDialog } = useContext(ModalDialogContext);
+  const { showModalDialog } = useContext(CoreUIContext);
   type QueryData = { myRecipes: RecipePreview[] };
   const [queryState, refresh] = useQuery<QueryData>({
     query: GET_MY_RECIPES,

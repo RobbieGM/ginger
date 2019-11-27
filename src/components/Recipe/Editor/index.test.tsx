@@ -2,18 +2,21 @@ import React from 'react';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
 import { render, fireEvent } from '@testing-library/react';
 import CoreUIProvider from 'components/CoreUIProvider';
+import { Provider } from 'test-helpers';
 import RecipeEditor from '.';
 
 const setup = (onSubmit: (recipe: Omit<RecipeInput, 'id'>) => void, close?: () => void) =>
   render(
-    <CoreUIProvider>
-      <RecipeEditor intent='create' close={() => {}} onSubmit={onSubmit} />
-    </CoreUIProvider>
+    <Provider>
+      <CoreUIProvider>
+        <RecipeEditor intent='create' close={() => {}} onSubmit={onSubmit} />
+      </CoreUIProvider>
+    </Provider>
   );
 
 // This test will timeout if the input is incorrect rather than return insufficient input, due to form validation
-it('returns the inputted recipe data when it is valid', done => {
-  const { getByPlaceholderText, getAllByPlaceholderText, getByText, container } = setup(recipe => {
+it('returns the inputted recipe data when it is valid', async done => {
+  const { findByPlaceholderText, getAllByPlaceholderText, getByText, container } = setup(recipe => {
     const expected: typeof recipe = {
       name: 'title',
       prepTime: 1,
@@ -28,13 +31,13 @@ it('returns the inputted recipe data when it is valid', done => {
     expect(recipe).toEqual(expected);
     done();
   });
-  const setByPlaceholder = (placeholder: string, value: string) =>
-    fireEvent.change(getByPlaceholderText(placeholder), { target: { value } });
+  const setByPlaceholder = async (placeholder: string, value: string) =>
+    fireEvent.change(await findByPlaceholderText(placeholder), { target: { value } });
   // Fill in fields with placeholders
-  setByPlaceholder('Recipe Title', 'title');
-  setByPlaceholder('Prep time (min)', '1');
-  setByPlaceholder('Cook time (min)', '2');
-  setByPlaceholder('Servings', '3');
+  await setByPlaceholder('Recipe Title', 'title');
+  await setByPlaceholder('Prep time (min)', '1');
+  await setByPlaceholder('Cook time (min)', '2');
+  await setByPlaceholder('Servings', '3');
   // Make private
   fireEvent.click(getByText('Private'));
   // Populate ingredients and instructions lists
@@ -45,13 +48,13 @@ it('returns the inputted recipe data when it is valid', done => {
   addToListByPlaceholder('Add an ingredient...', 'ingredient 1');
   addToListByPlaceholder('Add an instruction...', 'step 1');
   // Submit
-  fireEvent.submit(container.querySelector('form')!);
+  fireEvent.click(getByText('Create'));
 }, 200);
 
-it('prompts the user to close when unsaved data is there', () => {
+it('prompts the user to close when unsaved data is there', async () => {
   const close = jest.fn();
-  const { getByPlaceholderText, getByLabelText, getByText } = setup(() => {}, close);
-  fireEvent.change(getByPlaceholderText('Recipe Title'), { target: { value: 'burritos' } });
+  const { findByPlaceholderText, getByLabelText, getByText } = setup(() => {}, close);
+  fireEvent.change(await findByPlaceholderText('Recipe Title'), { target: { value: 'burritos' } });
   fireEvent.click(getByLabelText('Close'));
   expect(getByText('Discard', { selector: 'button' })).toBeTruthy();
   expect(close).not.toHaveBeenCalled();
