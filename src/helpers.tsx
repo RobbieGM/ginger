@@ -2,16 +2,19 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import classNames from 'classnames';
 
 /**
- * Returns a value, or what it was before if it's undefined or null.
+ * Returns a value, or what it was before if it was invalid.
  */
-export function useMemory<T>(value: T | undefined) {
-  const memory = useRef<T | undefined>(value);
+export function useMemory<Supertype, Subtype extends Supertype>(
+  value: Supertype,
+  isValid: (x: Supertype) => x is Subtype = (x): x is any => x != null
+): Subtype | undefined {
+  const memory = useRef<Subtype | undefined>(isValid(value) ? value : undefined);
   useEffect(() => {
-    if (value != null) {
+    if (isValid(value)) {
       memory.current = value;
     }
-  }, [value]);
-  return value || memory.current;
+  }, [value, isValid]);
+  return isValid(value) ? value : memory.current;
 }
 
 /**
@@ -78,10 +81,24 @@ export const animatable = <TProps,>(
 ): React.FC<Partial<TProps>> => props => {
   const fullyVisible = isVisible(props);
   const mounted = useMounted(fullyVisible, delay);
-  const rememberedProps = useMemory(props);
+  const rememberedProps = useMemory(props, isVisible);
   return (
     <div className={classNames(className, !fullyVisible && hiddenClassName)}>
       {mounted && <Component {...(rememberedProps as TProps)} />}
     </div>
   );
 };
+
+/**
+ * Attaches an event listener to an element and removes it when the component unmounts.
+ *
+ * @param element The element to add the handler to
+ * @param type The event to listen to (e.g., "click")
+ * @param listener the event handler to attach
+ */
+export function useEventListener(element: EventTarget, type: string, listener: () => void) {
+  useEffect(() => {
+    element.addEventListener(type, listener);
+    return () => element.removeEventListener(type, listener);
+  });
+}

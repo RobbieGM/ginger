@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import deepEqual from 'dequal';
 import { UseQueryState } from 'urql';
+import { DispatchType } from 'store/store';
 import { Recipe } from '../../backend/data-types/Recipe';
 import AppState, { PartialRecipe } from '../../store/state';
 import { mergeRecipes } from './actions';
@@ -19,8 +20,8 @@ export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
 ) {
   type ReturnedRecipe = PartialRecipe & ReturnType<typeof mapDataToResult>[number];
   const [merged, setMerged] = useState(false);
-  const dispatch = useDispatch();
-  useEffect(() => {
+  const dispatch = useDispatch<DispatchType>();
+  useDeepCompareEffect(() => {
     if (request.data) {
       dispatch(mergeRecipes(...mapDataToResult(request.data)));
       setMerged(true);

@@ -1,28 +1,45 @@
 import { ActionType } from 'store/store';
+import { showErrorIfPresent } from 'components/CoreUIProvider/helpers';
 import { PartialRecipe } from '../../store/state';
 import { createAction, ActionWithPayload } from '../../store/actions';
-import { SET_BOOKMARK_DATE } from './queries';
+import { SET_BOOKMARK_DATE, RATE } from './queries';
 
 export const mergeRecipes = (...recipes: PartialRecipe[]) => createAction('MERGE_RECIPES', recipes);
+
 type SetBookmarkDateAction = ActionWithPayload<
   'SET_BOOKMARK_DATE',
   {
     recipeId: string;
-    date: Date | undefined;
+    date: number | undefined;
   }
 >;
-export const setBookmarkDate = (id: string, date: Date | undefined): ActionType<void> => (
+export const setBookmarkDate = (id: string, date: number | undefined): ActionType<void> => (
   dispatch,
   getState,
   client
 ) => {
-  client.mutation(SET_BOOKMARK_DATE, { id, date }).toPromise();
+  client
+    .mutation(SET_BOOKMARK_DATE, { id, date })
+    .toPromise()
+    .then(showErrorIfPresent('Failed to bookmark recipe', dispatch));
   dispatch(
     createAction('SET_BOOKMARK_DATE', {
       recipeId: id,
       date
     })
   );
+};
+
+export const rate = (id: string, rating: number): ActionType<void> => (
+  dispatch,
+  getState,
+  client
+) => {
+  client
+    .mutation(RATE, { rating, id })
+    .toPromise()
+    .then(showErrorIfPresent('Failed to rate recipe', dispatch, true));
+  dispatch(mergeRecipes({ id, userRating: rating }));
 };
 
 export type BasicAction = ReturnType<typeof mergeRecipes>;

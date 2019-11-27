@@ -1,4 +1,4 @@
-import { useQuery } from 'urql';
+import { useQuery, UseQueryState } from 'urql';
 import { Recipe } from '../../store/state';
 
 export const CREATE_RECIPE = `
@@ -10,8 +10,14 @@ export const CREATE_RECIPE = `
 `;
 
 export const SET_BOOKMARK_DATE = `
-  mutation SetBookmarkDate($date: DateTime, $id: String!) {
+  mutation SetBookmarkDate($date: Float, $id: String!) {
     setBookmarkDate(date: $date, recipeId: $id)
+  }
+`;
+
+export const RATE = `
+  mutation Rate($rating: Int!, $id: String!) {
+    rate(rating: $rating, recipeId: $id)
   }
 `;
 
@@ -22,18 +28,21 @@ export const SET_BOOKMARK_DATE = `
  * @param fields Required fields on each Recipe
  */
 export function useRecipesQuery<T extends keyof Recipe>(recipeIds: string[], fields: T[]) {
+  const fieldsWithId = [...new Set(['id', ...fields])] as (T | 'id')[];
   const GET_RECIPES = `
-    query recipes($ids: [String!]!) {
-      ${fields.join('\n')}
+    query GetRecipes($ids: [String!]!) {
+      recipes(ids: $ids) {
+        ${fieldsWithId.join('\n')}
+      }
     }
   `;
-  type RequestedRecipeType = Pick<Recipe, T>;
-  const [result] = useQuery<RequestedRecipeType[]>({
+  type RequestedRecipeType = Pick<Recipe, T | 'id'>;
+  const [result] = useQuery<{ recipes: RequestedRecipeType[] }>({
     query: GET_RECIPES,
     variables: {
       ids: recipeIds
     },
     pause: fields.length === 0 || recipeIds.length === 0
   });
-  return result;
+  return { ...result, data: result?.data?.recipes } as UseQueryState<RequestedRecipeType[]>;
 }

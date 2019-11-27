@@ -1,14 +1,14 @@
 import React from 'react';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
 import { render, fireEvent } from '@testing-library/react';
-import ModalDialogProvider from 'components/ModalDialogProvider';
+import CoreUIProvider from 'components/CoreUIProvider';
 import RecipeEditor from '.';
 
 const setup = (onSubmit: (recipe: Omit<RecipeInput, 'id'>) => void, close?: () => void) =>
   render(
-    <ModalDialogProvider>
+    <CoreUIProvider>
       <RecipeEditor intent='create' close={() => {}} onSubmit={onSubmit} />
-    </ModalDialogProvider>
+    </CoreUIProvider>
   );
 
 // This test will timeout if the input is incorrect rather than return insufficient input, due to form validation
@@ -18,6 +18,7 @@ it('returns the inputted recipe data when it is valid', done => {
       name: 'title',
       prepTime: 1,
       cookTime: 2,
+      servings: 3,
       isPrivate: true,
       ingredients: ['ingredient 1'],
       directions: ['step 1'],
@@ -33,6 +34,7 @@ it('returns the inputted recipe data when it is valid', done => {
   setByPlaceholder('Recipe Title', 'title');
   setByPlaceholder('Prep time (min)', '1');
   setByPlaceholder('Cook time (min)', '2');
+  setByPlaceholder('Servings', '3');
   // Make private
   fireEvent.click(getByText('Private'));
   // Populate ingredients and instructions lists

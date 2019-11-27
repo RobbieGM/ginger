@@ -12,18 +12,27 @@ export class Recipe {
   id: string;
 
   @Field()
+  isMine: boolean;
+
+  @Field()
   @Column()
   name: string;
 
   @Field(type => User)
-  @ManyToOne(type => User, user => user.recipes)
+  @ManyToOne(
+    type => User,
+    user => user.recipes
+  )
   user: User;
 
   @Field(type => Float, { nullable: true })
   averageRating?: number;
 
   @Field(type => [Rating])
-  @OneToMany(type => Rating, rating => rating.recipe)
+  @OneToMany(
+    type => Rating,
+    rating => rating.recipe
+  )
   ratings: Rating[];
 
   @Authorized()
@@ -32,9 +41,12 @@ export class Recipe {
 
   @Authorized()
   @Field({ nullable: true })
-  bookmarkDate?: Date;
+  bookmarkDate?: number;
 
-  @OneToMany(type => Bookmark, bookmark => bookmark.recipe)
+  @OneToMany(
+    type => Bookmark,
+    bookmark => bookmark.recipe
+  )
   bookmarks: Bookmark[];
 
   @Field()
@@ -66,6 +78,10 @@ export class Recipe {
   isPrivate: boolean;
 
   @Field()
-  @UpdateDateColumn()
-  lastModified: Date;
+  @Column({ type: 'bigint' })
+  lastModified: number;
+
+  @Field()
+  @Column({ type: 'bigint' })
+  creationDate: number;
 }

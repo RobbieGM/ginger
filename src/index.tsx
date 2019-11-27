@@ -5,16 +5,28 @@ import './index.scss';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import AuthenticationGate from 'components/AuthenticationGate';
-import { createClient, Provider as ClientProvider } from 'urql';
+import {
+  createClient,
+  Provider as ClientProvider,
+  dedupExchange,
+  cacheExchange,
+  fetchExchange,
+  Exchange
+} from 'urql';
 import HistoryProvider from 'components/HistoryProvider';
 import { createStoreWithClient } from './store/store';
 import * as serviceWorker from './serviceWorker';
 import App from './components/App';
 
+// const noopExchange: Exchange = ({ client, forward }) => operations$ => {
+//   return forward(operations$);
+// };
+
 const apiClient = createClient({
   url: `${window.location.protocol}//${window.location.hostname}${
     process.env.NODE_ENV === 'development' ? ':5000' : ''
   }/graphql`,
+  // exchanges: [noopExchange, dedupExchange, cacheExchange, fetchExchange],
   fetchOptions: {
     credentials: 'include'
   }

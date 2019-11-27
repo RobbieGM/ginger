@@ -1,0 +1,63 @@
+@import '../../../../variables';
+
+.moreOptionsContainer {
+  margin-left: auto;
+  position: relative;
+  // .moreOptionsButton {
+
+  // }
+  .moreOptionsDropdown {
+    position: absolute;
+    top: calc(4px);
+    right: 4px;
+    transform-origin: top right;
+    background: white;
+    box-shadow: $shadow-medium;
+    border-radius: 3px;
+    transition: all 0.2s ease-out;
+    &:not(.open) {
+      transition-timing-function: ease-in;
+      visibility: hidden;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    button {
+      display: flex;
+      width: 100%;
+      cursor: pointer;
+      align-items: center;
+      padding: 8px;
+      padding-left: 12px;
+      transition: background-color 0.1s;
+      &[touched],
+      &:active,
+      &[data-focus-visible-added] {
+        background: rgba(0, 0, 0, 0.1);
+        transition: none;
+      }
+      svg {
+        width: 16px;
+        margin-right: 12px;
+      }
+    }
+    &.open button {
+      @for $i from 1 to 5 {
+        animation: option-appear 0.15s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+        &:nth-of-type(#{$i}) {
+          animation-delay: 70ms * $i;
+        }
+      }
+    }
+  }
+}
+
+@keyframes option-appear {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

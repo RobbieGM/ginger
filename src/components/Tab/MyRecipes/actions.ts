@@ -20,7 +20,7 @@ export const createRecipe = (
       .query(CREATE_RECIPE, { recipe })
       .toPromise();
     if (result.data) {
-      dispatch(mergeRecipes(result.data));
+      dispatch(mergeRecipes(recipe));
       return true;
     }
     console.error(result.error);
@@ -29,7 +29,7 @@ export const createRecipe = (
   const offlineRecipe: RecipeInput & RecipePreview = {
     averageRating: undefined,
     userRating: undefined,
-    bookmarkDate: new Date(),
+    bookmarkDate: Date.now(),
     ...recipe
   };
   dispatch(mergeRecipes(offlineRecipe));

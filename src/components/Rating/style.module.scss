@@ -1,0 +1,22 @@
+@import '../../variables';
+
+.rating {
+  display: flex;
+  overflow: hidden;
+  .star {
+    line-height: 0;
+    cursor: pointer;
+    transition: transform 0.1s;
+    &.on {
+      color: $orange;
+    }
+    &.off {
+      color: $lighter-gray;
+    }
+    &[data-focus-visible-added],
+    &:hover,
+    &:active {
+      transform: scale(1.2);
+    }
+  }
+}

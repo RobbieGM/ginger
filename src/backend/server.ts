@@ -15,7 +15,7 @@ async function bootstrap() {
     type: 'postgres',
     url: process.env!.DATABASE_URL,
     entities: [`${__dirname}/data-types/**/*.ts`],
-    synchronize: true // Will force-update schema min production
+    synchronize: true // Will force-update schema in production
   });
 
   console.log('Building schema...');
@@ -33,7 +33,7 @@ async function bootstrap() {
       };
     },
     formatError(err) {
-      console.error(err);
+      console.error('error', err, 'stack trace', err.extensions?.exception?.stacktrace);
       return process.env.NODE_ENV === 'production' ? new Error('Internal server error') : err;
     }
   });

@@ -9,24 +9,51 @@
   height: 48px;
   background: $translucent-white;
   box-shadow: $shadow-medium;
+  white-space: nowrap;
+  .title {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    & ~ .button {
+      margin-right: 0;
+      &:not(:last-of-type) {
+        margin-right: 12px;
+      }
+    }
+  }
   .button {
     display: flex;
+    position: relative;
     align-items: center;
     justify-content: center;
     width: 48px;
     height: 48px;
     box-sizing: border-box;
     padding: 12px;
-    margin-right: 12px;
     color: black;
     opacity: 0.8;
     cursor: pointer;
     transition-duration: 0.2s;
     &:active,
-    &[touched],
-    &[data-focus-visible-added] {
+    &[touched] {
       opacity: 0.4;
       transition-duration: 0s;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 999px;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.2s;
+    }
+    &[data-focus-visible-added]::before {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 }

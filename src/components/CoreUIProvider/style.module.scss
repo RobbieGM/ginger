@@ -100,3 +100,27 @@
     white-space: nowrap;
   }
 }
+
+.snackbar {
+  position: fixed;
+  left: 50vw;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  width: 280px;
+  padding: 0 12px;
+  box-shadow: $shadow-medium, $shadow-highest;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.67);
+  color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  transition: transform 0.2s ease-out;
+  &:not(.visible) {
+    transition: transform 0.2s ease-in;
+    transform: translate(-50%, 100%);
+  }
+}

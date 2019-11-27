@@ -1,7 +1,11 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { useMemory } from 'helpers';
+import { useSelector, useDispatch } from 'react-redux';
+import AppState, { Snackbar } from 'store/state';
+import { DispatchType } from 'store/store';
 import classes from './style.module.scss';
+import { dismissSnackbar } from './actions';
 
 export interface ModalDialog<TButton> {
   title: string;
@@ -37,13 +41,31 @@ function useDialogQueue() {
       queue[0].onClose(button);
       setQueue(queue.slice(1));
     },
-    current: queue[0] // May represent a past dialog
+    current: queue[0]
   };
 }
 
-const ModalDialogProvider: React.FC = ({ children }) => {
+const SNACKBAR_TIMEOUT = 2000;
+
+function useCurrentSnackbar() {
+  const dispatch = useDispatch<DispatchType>();
+  const snackbars = useSelector((state: AppState) => state.queuedSnackbars);
+  const snackbar: Snackbar | undefined = snackbars[0];
+  const lastSnackbar = useMemory(snackbar);
+  useEffect(() => {
+    setTimeout(() => {
+      dispatch(dismissSnackbar());
+    }, SNACKBAR_TIMEOUT);
+    // Watch lastSnackbar instead of snackbar so that when it goes away (becomes undefined) setTimeout doesn't get called and potentially dismiss the next one early
+  }, [lastSnackbar, dispatch]);
+  return { snackbar: lastSnackbar?.text, visible: !!snackbar };
+}
+
+const CoreUIProvider: React.FC = ({ children }) => {
+  const dispatch = useDispatch<DispatchType>();
   const dialogs = useDialogQueue();
   const visibleDialog = useMemory(dialogs.current);
+  const { snackbar, visible } = useCurrentSnackbar();
   return (
     <ModalDialogContext.Provider
       value={{
@@ -78,8 +100,12 @@ const ModalDialogProvider: React.FC = ({ children }) => {
             ))}
         </div>
       </div>
+      <div className={classNames(classes.snackbar, visible && classes.visible)}>
+        {snackbar}
+        <button onClick={() => dispatch(dismissSnackbar())}>OK</button>
+      </div>
     </ModalDialogContext.Provider>
   );
 };
 
-export default ModalDialogProvider;
+export default CoreUIProvider;

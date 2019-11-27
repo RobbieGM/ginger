@@ -23,10 +23,9 @@ declare global {
   }
 }
 
-const rootReducer = combineReducers((reducers as unknown) as ReducersMapObject<
-  AppState,
-  AppAction
->);
+const rootReducer = combineReducers(
+  (reducers as unknown) as ReducersMapObject<AppState, AppAction>
+);
 
 export const createStoreWithClient = (client: Client) => {
   const store = createStore(
@@ -34,11 +33,12 @@ export const createStoreWithClient = (client: Client) => {
       {
         key: 'root',
         storage,
+        whitelist: ['recipes'],
         transforms: [
           createTransform((stateToBeSaved, key) => {
             if (key === 'recipes') {
               const recipes = stateToBeSaved as PartialRecipe[];
-              return recipes.filter(recipe => recipe.bookmarkDate !== undefined);
+              return recipes.filter(recipe => recipe.bookmarkDate != null);
             }
             return stateToBeSaved;
           }) // ,

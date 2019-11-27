@@ -7,11 +7,13 @@ import {
   Root,
   Mutation,
   Authorized,
-  Ctx
+  Ctx,
+  Int,
+  Float
 } from 'type-graphql';
 import { InjectManager } from 'typeorm-typedi-extensions';
 import { Service } from 'typedi';
-import { EntityManager } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { Recipe } from '../data-types/Recipe';
 import { RecipeInput } from '../api-input/RecipeInput';
 import { Context } from '../Context';
@@ -23,9 +25,11 @@ import { Rating } from '../data-types/Rating';
 export class RecipeResolver implements ResolverInterface<Recipe> {
   @InjectManager() private readonly manager: EntityManager;
 
-  @Query(returns => Recipe)
-  recipe(@Arg('id') id: string) {
-    return this.manager.findOne(Recipe, { id });
+  @Query(returns => [Recipe])
+  async recipes(@Arg('ids', type => [String]) ids: string[]) {
+    return this.manager.find(Recipe, { where: { id: In(ids) } }).then(recipes => {
+      return recipes;
+    });
   }
 
   @Authorized()
@@ -54,7 +58,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     const editedRecipes: Recipe[] = [];
     const allConflictingRecipes = await this.manager.find(Recipe, {
       where: {
-        id: recipes.map(r => r.id)
+        id: In(recipes.map(r => r.id))
       },
       relations: ['user']
     });
@@ -63,9 +67,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     ); // Consists only of recipes the user may update
     conflictingRecipesForUser.forEach(serverRecipe => {
       const clientRecipe = recipes.find(r => r.id === serverRecipe.id)!;
-      const clientLastModified = new Date(
-        Math.max(clientRecipe.lastModified.getTime(), Date.now())
-      );
+      const clientLastModified = Math.max(clientRecipe.lastModified, Date.now());
       if (clientLastModified > serverRecipe.lastModified) {
         editedRecipes.push({
           ...serverRecipe,
@@ -81,7 +83,11 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     const recipeIdExists = (id: string) => allConflictingRecipes.map(r => r.id).includes(id);
     const createdRecipes = recipes.filter(recipe => !recipeIdExists(recipe.id));
     createdRecipes.forEach(recipe => {
-      this.manager.save(Recipe, { ...recipe, user: { id: context.userId } });
+      this.manager.save(Recipe, {
+        ...recipe,
+        creationDate: recipe.lastModified,
+        user: { id: context.userId }
+      });
     });
     return updatedRecipesForClient;
   }
@@ -90,9 +96,10 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   @Mutation(returns => Boolean, { nullable: true })
   async setBookmarkDate(
     @Arg('recipeId') recipeId: string,
-    @Arg('date', type => Date, { nullable: true }) date: Date | undefined,
+    @Arg('date', type => Float, { nullable: true }) date: number | undefined,
     @Ctx() { userId }: Context
   ) {
+    console.log('setting bookmark date to', date);
     const existingBookmarks = await this.manager.find(Bookmark, {
       where: {
         recipe: {
@@ -104,7 +111,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       }
     });
     await Promise.all(existingBookmarks.map(bookmark => this.manager.remove(bookmark))); // Remove potential duplicates
-    if (date !== undefined) {
+    if (date != null) {
       this.manager.save(Bookmark, {
         user: {
           id: userId
@@ -115,6 +122,18 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         date
       });
     }
+  }
+
+  @Authorized()
+  @FieldResolver()
+  async isMine(@Root() { id }: Recipe, @Ctx() { userId }: Context) {
+    const thisRecipe = await this.manager.findOne(Recipe, {
+      where: {
+        id,
+        user: { id: userId }
+      }
+    });
+    return !!thisRecipe;
   }
 
   @FieldResolver()
@@ -134,11 +153,14 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @FieldResolver()
-  async bookmarkDate(@Root() { id }: Recipe, @Ctx() context: Context): Promise<Date | undefined> {
+  async bookmarkDate(
+    @Root() { id }: Recipe,
+    @Ctx() { userId }: Context
+  ): Promise<number | undefined> {
     const bookmark = await this.manager.findOne(Bookmark, {
       where: {
         user: {
-          id: context.userId
+          id: userId
         },
         recipe: {
           id

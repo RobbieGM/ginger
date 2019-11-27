@@ -21,9 +21,7 @@ const SavedTab: React.FC = () => {
     : savedRecipes.filter((recipe): recipe is RecipePreview =>
         recipeHasFields(recipe, RECIPE_PREVIEW_FIELDS)
       );
-  const sortedRecipes = recipes?.sort(
-    (a, b) => b.bookmarkDate!.getTime() - a.bookmarkDate!.getTime()
-  );
+  const sortedRecipes = recipes?.sort((a, b) => b.bookmarkDate! - a.bookmarkDate!);
 
   return (
     <div className={classes.tab}>

@@ -6,10 +6,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Reducer } from 'redux';
 import AppState from 'store/state';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
-import { RecipeAction } from 'components/Recipe/actions';
+import { AppAction } from 'store/actions';
 
 interface Props {
-  rootReducer?: Reducer<AppState & PersistPartial, RecipeAction>;
+  rootReducer?: Reducer<AppState & PersistPartial, AppAction>;
 }
 
 export const Provider: React.FC<Props> = ({ rootReducer, children }) => {

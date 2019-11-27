@@ -2,12 +2,11 @@
 @import '_variables';
 
 body {
-  background-color: $background;
+  background: $background;
   // background-image: url('assets/background-noise.svg');
   color: $text;
   margin: 0;
   font-family: 'Lexend Deca', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: $background;
 }
 
 * {

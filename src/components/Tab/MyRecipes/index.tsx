@@ -7,7 +7,7 @@ import { Plus } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
 import { useQuery } from 'urql';
-import { ModalDialogContext } from '../../ModalDialogProvider';
+import { ModalDialogContext } from '../../CoreUIProvider';
 import RecipeEditor from '../../Recipe/Editor';
 import { useMergedRecipesQuery } from '../../Recipe/helpers';
 import RecipeList from '../../Recipe/List';
@@ -21,7 +21,7 @@ const MyRecipesTab: React.FC = () => {
   const dispatch = useDispatch<DispatchType>();
   const { showModalDialog } = useContext(ModalDialogContext);
   type QueryData = { myRecipes: RecipePreview[] };
-  const [queryState] = useQuery<QueryData>({
+  const [queryState, refresh] = useQuery<QueryData>({
     query: GET_MY_RECIPES,
     requestPolicy: 'network-only'
   });
@@ -35,8 +35,9 @@ const MyRecipesTab: React.FC = () => {
   } = useDelayedVisibility(200);
   async function onSubmit(recipeData: Omit<RecipeInput, 'id'>) {
     const recipeWithId = { id: nanoid(), ...recipeData };
-    const successful = dispatch(createRecipe(recipeWithId));
+    const successful = await dispatch(createRecipe(recipeWithId));
     if (successful) {
+      refresh({ requestPolicy: 'network-only' });
       hide();
     } else {
       showModalDialog({

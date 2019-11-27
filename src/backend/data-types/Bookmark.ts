@@ -9,13 +9,19 @@ export class Bookmark {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @ManyToOne(type => User, user => user.bookmarks)
+  @ManyToOne(
+    type => User,
+    user => user.bookmarks
+  )
   public user: User;
 
-  @ManyToOne(type => Recipe, recipe => recipe.bookmarks)
+  @ManyToOne(
+    type => Recipe,
+    recipe => recipe.bookmarks
+  )
   public recipe: Recipe;
 
-  @Column()
+  @Column({ type: 'bigint' })
   @Field()
-  public date: Date;
+  public date: number;
 }

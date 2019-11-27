@@ -1,5 +1,5 @@
 import { RecipeAction } from '../components/Recipe/actions';
-import { ActionType } from './store';
+import { SnackbarAction } from '../components/CoreUIProvider/actions';
 
 export interface Action<T extends string> {
   type: T;
@@ -15,4 +15,4 @@ export function createAction<T extends string, P>(type: T, payload?: P) {
   return payload === undefined ? { type } : { type, payload };
 }
 
-export type AppAction = RecipeAction;
+export type AppAction = RecipeAction | SnackbarAction;

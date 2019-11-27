@@ -1,0 +1,111 @@
+@import '../../../variables';
+
+.recipeView {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.topBar {
+  width: 100%;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 24px;
+  width: calc(100% - 48px);
+  max-width: 1000px;
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0;
+    margin-bottom: 12px;
+    svg {
+      color: $text-light;
+    }
+  }
+  .metadata {
+    color: $text-light;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .ratingContainer {
+    margin-left: -3px;
+  }
+  .servings {
+    margin-left: 8px;
+  }
+  .ingredientsAndDirectionsContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 24px;
+    .buttons {
+      align-self: center;
+      background: $translucent-white;
+      margin: 8px 0;
+      border-radius: 999px;
+      box-shadow: $shadow-close;
+      overflow: hidden;
+      button {
+        padding: 4px 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        &:active,
+        &[data-focus-visible-added] {
+          transition: none;
+          background: rgba(0, 0, 0, 0.1);
+        }
+        &.selected {
+          color: $green;
+        }
+        &:first-child {
+          padding-left: 16px;
+        }
+        &:last-child {
+          padding-right: 16px;
+        }
+      }
+    }
+    .ingredientsAndDirections {
+      @include hide-scrollbars;
+      max-height: 400px;
+      @media all and (max-height: 500px) {
+        max-height: calc(100vh - 100px);
+      }
+      margin-top: 8px;
+      display: flex;
+      flex: 1;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: mandatory;
+      scroll-snap-type: x mandatory;
+      & > ol,
+      & > ul {
+        list-style-position: inside;
+        width: 250px;
+        max-width: 100%;
+        flex-grow: 1;
+        flex-shrink: 0;
+        padding: 0;
+        margin: 0;
+        overflow-y: auto;
+        scroll-snap-align: start;
+        &:last-child {
+          scroll-snap-align: end;
+        }
+      }
+    }
+  }
+}
+
+.loading {
+  display: block;
+  margin: 0 auto;
+}

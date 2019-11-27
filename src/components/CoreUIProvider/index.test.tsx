@@ -1,16 +1,16 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import ModalDialogProvider, { ModalDialogContext, ModalDialog } from '.';
+import CoreUIProvider, { ModalDialogContext, ModalDialog } from '.';
 
 function setup(
   getContent: (showDialog: (dialog: ModalDialog<string>) => Promise<string>) => JSX.Element
 ) {
   return render(
-    <ModalDialogProvider>
+    <CoreUIProvider>
       <ModalDialogContext.Consumer>
         {({ showModalDialog }) => getContent(showModalDialog)}
       </ModalDialogContext.Consumer>
-    </ModalDialogProvider>
+    </CoreUIProvider>
   );
 }
 

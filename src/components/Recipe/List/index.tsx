@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
-import { Bookmark, Star, Clock } from 'react-feather';
+import { Bookmark, Star, Clock, Users } from 'react-feather';
 import { HistoryContext } from 'components/HistoryProvider';
 import classes from './style.module.scss';
 import { DispatchType } from '../../../store/store';
@@ -37,7 +37,7 @@ const RecipeList: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch<DispatchType>();
   const toggleBookmark = (recipe: Pick<Recipe, 'id' | 'bookmarkDate'>) => {
-    dispatch(setBookmarkDate(recipe.id, recipe.bookmarkDate ? undefined : new Date()));
+    dispatch(setBookmarkDate(recipe.id, recipe.bookmarkDate ? undefined : Date.now()));
   };
   const browserHistory = useContext(HistoryContext);
   const viewRecipe = (id: string) => browserHistory.push(`/recipe/${id}`);
@@ -55,22 +55,24 @@ const RecipeList: React.FC<Props> = ({
         <>
           <div className={classes.recipeCardContainer}>
             {recipes.map(recipe => (
-              <div
+              <a
                 className={classes.recipeCard}
                 key={recipe.id}
                 style={recipe.imageURL ? { backgroundImage: `url(${recipe.imageURL})` } : {}}
-                tabIndex={0}
-                onClick={() => viewRecipe(recipe.id)}
-                onKeyDown={event => event.key === 'Enter' && viewRecipe(recipe.id)}
-                role='button'
+                href={`/recipe/${recipe.id}`}
+                onClick={event => {
+                  event.preventDefault();
+                  viewRecipe(recipe.id);
+                }}
               >
                 <button
                   className={classNames(classes.bookmarkIcon, {
                     [classes.bookmarked]: recipe.bookmarkDate
                   })}
                   onClick={event => {
-                    toggleBookmark(recipe);
+                    event.preventDefault();
                     event.stopPropagation();
+                    toggleBookmark(recipe);
                   }}
                   aria-label='Save'
                 >
@@ -80,18 +82,28 @@ const RecipeList: React.FC<Props> = ({
                   <h3>{recipe.name}</h3>
                   <div className={classes.recipeMetadata}>
                     {recipe.averageRating && (
-                      <div className={classes.star} aria-label='Average rating'>
+                      <div
+                        className={classNames(
+                          classes.star,
+                          recipe.userRating && classes.highlighted
+                        )}
+                        aria-label={recipe.userRating ? 'Your rating' : 'Average rating'}
+                      >
                         <Star />
-                        {recipe.averageRating}
+                        {recipe.userRating ?? recipe.averageRating}
                       </div>
                     )}
                     <div aria-label='Total time'>
                       <Clock />
                       {recipe.prepTime + recipe.cookTime}
                     </div>
+                    <div aria-label='Servings'>
+                      <Users />
+                      {recipe.servings}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
           <button onClick={loadMore}>Load more</button>

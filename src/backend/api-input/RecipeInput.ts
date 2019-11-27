@@ -34,5 +34,5 @@ export class RecipeInput implements Partial<Recipe> {
   imageURL: string;
 
   @Field()
-  lastModified: Date;
+  lastModified: number;
 }

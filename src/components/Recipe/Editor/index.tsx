@@ -3,7 +3,7 @@ import { X, Image, Check } from 'react-feather';
 import classNames from 'classnames';
 import ListEditor from 'components/ListEditor';
 import { KeyedList } from 'components/ListEditor/types';
-import { ModalDialogContext } from 'components/ModalDialogProvider';
+import { ModalDialogContext } from 'components/CoreUIProvider';
 import { RecipeInput } from 'backend/api-input/RecipeInput';
 import classes from './style.module.scss';
 import topBarClasses from '../../../top-bar.module.scss';
@@ -84,7 +84,7 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
         directions: steps.map(x => x.value),
         imageURL,
         isPrivate,
-        lastModified: new Date()
+        lastModified: Date.now()
       });
     }
   }

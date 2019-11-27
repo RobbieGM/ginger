@@ -14,8 +14,8 @@ export class Rating {
   value: number;
 
   @Field()
-  @Column()
-  date: Date;
+  @Column({ type: 'bigint' })
+  date: number;
 
   @Field(type => User)
   @ManyToOne(type => User)
