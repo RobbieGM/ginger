@@ -23,7 +23,8 @@ function setupWithRecipe() {
       id: '',
       name: 'possum nuggets',
       prepTime: 30,
-      cookTime: 20
+      cookTime: 20,
+      servings: 4
     }
   ];
   return render(

@@ -39,13 +39,11 @@ const RecipeViewMoreOptions: React.FC<Props> = ({ recipe }) => {
         onClick={() => {
           setVisible(true);
         }}
+        aria-label='More options'
       >
         <MoreHorizontal />
       </button>
-      <div
-        // eslint-disable-next-line no-undef
-        className={classNames(classes.moreOptionsDropdown, isVisible && classes.open)}
-      >
+      <div className={classNames(classes.moreOptionsDropdown, isVisible && classes.open)}>
         {navigator.share && (
           <button onClick={() => navigator.share?.({ title: recipe.name, url: location.href })}>
             <Share />

@@ -7,11 +7,10 @@ import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
 import { ReactComponent as Loading } from '../../../assets/loading.svg';
 import topBarClasses from '../../../top-bar.module.scss';
-import { useMergedRecipesQuery } from '../helpers';
+import { rate } from '../actions';
 import { useRecipesQuery } from '../queries';
 import RecipeViewMoreOptions from './MoreOptions';
 import classes from './style.module.scss';
-import { rate } from '../actions';
 
 interface Props {
   recipeId: string;
@@ -39,29 +38,28 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
       setCurrentList(undefined);
     }
   }
-  const { recipes, loading, errorOccurred } = useMergedRecipesQuery(
-    useRecipesQuery(
-      [recipeId],
-      [
-        'averageRating',
-        'cookTime',
-        'directions',
-        'imageURL',
-        'ingredients',
-        'isPrivate',
-        'lastModified',
-        'name',
-        'prepTime',
-        'servings',
-        'userRating',
-        'isMine'
-      ]
-    ),
-    mapIdentity
-  );
+  const { data: recipes, fetching: loading, error: errorOccurred } = useRecipesQuery(
+    //useMergedRecipesQuery(
+    [recipeId],
+    [
+      'averageRating',
+      'cookTime',
+      'directions',
+      'imageURL',
+      'ingredients',
+      'isPrivate',
+      'lastModified',
+      'name',
+      'prepTime',
+      'servings',
+      'userRating',
+      'isMine'
+    ]
+  ); // ,
+  //   mapIdentity
+  // );
   const recipe = recipes?.[0];
   const { goBack } = useContext(HistoryContext);
-  console.log('recipe', recipe);
   useEventListener(window, 'resize', () => {
     updateCurrentList();
   });
@@ -78,15 +76,6 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
         {recipe && <RecipeViewMoreOptions recipe={recipe} />}
       </div>
       <div className={classes.main}>
-        {/*
-            servings
-            prep time
-            cook time
-            rating
-            private
-          last modified
-            ingredients, directions
-        */}
         {recipe && (
           <>
             <h1>

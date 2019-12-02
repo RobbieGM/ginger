@@ -1,3 +1,6 @@
+import { Server } from 'http';
+import { ChildProcess } from 'child_process';
+
 type ShareData = {
   title?: string;
   text?: string;
@@ -5,7 +8,15 @@ type ShareData = {
   files?: File[];
 };
 
-interface Navigator {
-  share?: (data?: ShareData) => Promise<void>;
-  canShare?: (data?: ShareData) => boolean;
+declare global {
+  namespace NodeJS {
+    interface Global {
+      TEST_SERVER: Server;
+    }
+  }
+
+  interface Navigator {
+    share?: (data?: ShareData) => Promise<void>;
+    canShare?: (data?: ShareData) => boolean;
+  }
 }

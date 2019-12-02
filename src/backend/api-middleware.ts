@@ -9,11 +9,13 @@ import { Context } from './Context';
 import { Authenticator } from './AuthChecker';
 
 useContainer(Container);
-async function bootstrap() {
-  console.log('Connecting to database...');
+export async function applyApiServerMiddleware(app: express.Express) {
+  const url =
+    process.env.NODE_ENV === 'test' ? process.env!.TEST_DATABASE_URL : process.env!.DATABASE_URL;
+  console.log(`Connecting to database at ${url} ...`);
   await createConnection({
     type: 'postgres',
-    url: process.env!.DATABASE_URL,
+    url,
     entities: [`${__dirname}/data-types/**/*.ts`],
     synchronize: true // Will force-update schema in production
   });
@@ -38,7 +40,6 @@ async function bootstrap() {
     }
   });
 
-  const app = express();
   app.use(cookieParser());
   apollo.applyMiddleware({
     app,
@@ -49,16 +50,5 @@ async function bootstrap() {
       }
     }
   });
-
-  app.listen({ port: 5000 }, () => {
-    console.log(`Ready at http://localhost:5000${apollo.graphqlPath}`);
-  });
+  return apollo;
 }
-
-bootstrap().catch(e => {
-  if (e instanceof GeneratingSchemaError) {
-    console.error(e.details[0]);
-  } else {
-    throw e;
-  }
-});

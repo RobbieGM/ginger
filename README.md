@@ -1,8 +1,14 @@
 # Ginger
 
-A simple recipe manager to learn React, Redux, GraphQL, TypeORM, and TDD.
+A simple recipe manager to learn React, Redux, GraphQL, TypeORM, and testing.
 
-### To-do:
+## Setup
+
+- `npm install`
+- `npm run backend-dev` and `npm run frontend-dev` for development
+- `npm run test` to test
+
+## To-do:
 
 - Basic functionality
   - Rating

@@ -16,6 +16,7 @@ const Rating: React.FC<Props> = ({ value, onChange }) => (
         onClick={() => onChange?.(i + 1)}
         // eslint-disable-next-line react/no-array-index-key
         key={i}
+        aria-label={`${i + 1} stars`}
       >
         <Star fill='currentColor' stroke='transparent' />
       </button>

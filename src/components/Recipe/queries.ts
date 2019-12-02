@@ -44,5 +44,5 @@ export function useRecipesQuery<T extends keyof Recipe>(recipeIds: string[], fie
     },
     pause: fields.length === 0 || recipeIds.length === 0
   });
-  return { ...result, data: result?.data?.recipes } as UseQueryState<RequestedRecipeType[]>;
+  return { ...result, data: result.data?.recipes }; // as UseQueryState<RequestedRecipeType[]>;
 }
