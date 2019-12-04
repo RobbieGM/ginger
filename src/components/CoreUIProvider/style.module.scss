@@ -111,7 +111,7 @@
   justify-content: space-between;
   height: 36px;
   width: 280px;
-  padding: 0 12px;
+  padding-left: 12px;
   box-shadow: $shadow-medium, $shadow-highest;
   z-index: 500;
   background: rgba(0, 0, 0, 0.67);
@@ -122,5 +122,17 @@
   &:not(.visible) {
     transition: transform 0.2s ease-in;
     transform: translate(-50%, 100%);
+  }
+  button {
+    height: 100%;
+    padding: 0 8px;
+    background: rgba(white, 0.2);
+    // color: $blue;
+    cursor: pointer;
+    &:active,
+    &[touched],
+    &[data-focus-visible-added] {
+      background: rgba(white, 0.4);
+    }
   }
 }

@@ -10,7 +10,7 @@ import { mergeRecipes } from './actions';
 import { useRecipesQuery } from './queries';
 
 /**
- * Automatically merges recipes from a graphql query once they are loaded, then returns an updating
+ * Automatically merges recipes from a graphql query once when they are loaded, then returns an updating
  * version of them synchronized with the store.
  * @param query The query to merge
  */
@@ -22,7 +22,7 @@ export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
   const [merged, setMerged] = useState(false);
   const dispatch = useDispatch<DispatchType>();
   useDeepCompareEffect(() => {
-    if (request.data) {
+    if (request.data && !merged) {
       dispatch(mergeRecipes(...mapDataToResult(request.data)));
       setMerged(true);
     }

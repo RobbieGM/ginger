@@ -13,7 +13,7 @@ import {
 } from 'type-graphql';
 import { InjectManager } from 'typeorm-typedi-extensions';
 import { Service } from 'typedi';
-import { EntityManager, In } from 'typeorm';
+import { EntityManager, In, DeepPartial } from 'typeorm';
 import { Recipe } from '../data-types/Recipe';
 import { RecipeInput } from '../api-input/RecipeInput';
 import { Context } from '../Context';
@@ -77,30 +77,32 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         updatedRecipesForClient.push(serverRecipe);
       }
     });
-    editedRecipes.forEach(recipe => {
-      this.manager.save(Recipe, recipe);
-    });
+
+    const save = (recipe: DeepPartial<Recipe>) => this.manager.save(Recipe, recipe);
+    await Promise.all(editedRecipes.map(save));
     const recipeIdExists = (id: string) => allConflictingRecipes.map(r => r.id).includes(id);
     const createdRecipes = recipes.filter(recipe => !recipeIdExists(recipe.id));
-    createdRecipes.forEach(recipe => {
-      this.manager.save(Recipe, {
-        ...recipe,
-        creationDate: recipe.lastModified,
-        user: { id: context.userId }
-      });
-    });
+
+    await Promise.all(
+      createdRecipes.map(recipe =>
+        save({
+          ...recipe,
+          creationDate: recipe.lastModified,
+          user: { id: context.userId }
+        })
+      )
+    );
     return updatedRecipesForClient;
   }
 
   @Authorized()
   @Mutation(returns => Boolean, { nullable: true })
-  async setBookmarkDate(
+  async setRating(
+    @Arg('rating', type => Int) rating: number,
     @Arg('recipeId') recipeId: string,
-    @Arg('date', type => Float, { nullable: true }) date: number | undefined,
     @Ctx() { userId }: Context
   ) {
-    console.log('setting bookmark date to', date);
-    const existingBookmarks = await this.manager.find(Bookmark, {
+    const existingRating = await this.manager.findOne(Rating, {
       where: {
         recipe: {
           id: recipeId
@@ -110,9 +112,40 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         }
       }
     });
-    await Promise.all(existingBookmarks.map(bookmark => this.manager.remove(bookmark))); // Remove potential duplicates
+    if (existingRating && rating === existingRating.value) return;
+    if (existingRating) await this.manager.remove(existingRating);
+    await this.manager.save(Rating, {
+      user: {
+        id: userId
+      },
+      recipe: {
+        id: recipeId
+      },
+      value: rating,
+      date: Date.now()
+    });
+  }
+
+  @Authorized()
+  @Mutation(returns => Boolean, { nullable: true })
+  async setBookmarkDate(
+    @Arg('recipeId') recipeId: string,
+    @Arg('date', type => Float, { nullable: true }) date: number | undefined,
+    @Ctx() { userId }: Context
+  ) {
+    const existingBookmark = await this.manager.findOne(Bookmark, {
+      where: {
+        recipe: {
+          id: recipeId
+        },
+        user: {
+          id: userId
+        }
+      }
+    });
+    if (existingBookmark) await this.manager.remove(existingBookmark); // Remove potential duplicate
     if (date != null) {
-      this.manager.save(Bookmark, {
+      await this.manager.save(Bookmark, {
         user: {
           id: userId
         },

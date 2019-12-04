@@ -1,6 +1,6 @@
 import { request } from '../utils';
 
-it('creates a user account', async () => {
+xit('creates a user account', async () => {
   console.log('doing request');
   const response = await request(`
     mutation {

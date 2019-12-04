@@ -49,7 +49,9 @@ export const createStoreWithClient = (client: Client) => {
     ),
     compose(
       applyMiddleware(thunk.withExtraArgument(client)),
-      window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : (x: any) => x
+      window.__REDUX_DEVTOOLS_EXTENSION__
+        ? window.__REDUX_DEVTOOLS_EXTENSION__({ trace: true })
+        : (x: any) => x
     )
   );
   const persistor = persistStore((store as unknown) as Store<any, AnyAction>, {});

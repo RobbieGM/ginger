@@ -2,11 +2,18 @@ import 'reflect-metadata';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { ApolloServer } from 'apollo-server-express';
-import { buildSchema, GeneratingSchemaError } from 'type-graphql';
+import { buildSchema, GeneratingSchemaError, MiddlewareFn } from 'type-graphql';
 import { createConnection, useContainer } from 'typeorm';
 import { Container } from 'typedi';
 import { Context } from './Context';
 import { Authenticator } from './AuthChecker';
+
+const interceptErrors: MiddlewareFn<Context> = ({ context, info }, next) => {
+  return next().catch(err => {
+    console.error('An error occurred in a resolver or service:', err, '\nQuery info:', info);
+    throw new Error('Internal server error');
+  });
+};
 
 useContainer(Container);
 export async function applyApiServerMiddleware(app: express.Express) {
@@ -24,7 +31,8 @@ export async function applyApiServerMiddleware(app: express.Express) {
   const schema = await buildSchema({
     resolvers: [`${__dirname}/resolvers/*.ts`],
     container: Container,
-    authChecker: Container.get(Authenticator).authChecker
+    authChecker: Container.get(Authenticator).authChecker,
+    globalMiddlewares: [interceptErrors]
   });
 
   const apollo = new ApolloServer({

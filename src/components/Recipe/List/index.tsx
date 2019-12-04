@@ -76,7 +76,7 @@ const RecipeList: React.FC<Props> = ({
                   }}
                   aria-label='Save'
                 >
-                  <Bookmark />
+                  <Bookmark aria-checked={recipe.bookmarkDate ? 'true' : 'false'} />
                 </button>
                 <div className={classes.bottomContent}>
                   <h3>{recipe.name}</h3>

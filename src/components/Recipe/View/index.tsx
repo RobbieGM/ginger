@@ -11,12 +11,11 @@ import { rate } from '../actions';
 import { useRecipesQuery } from '../queries';
 import RecipeViewMoreOptions from './MoreOptions';
 import classes from './style.module.scss';
+import { useMergedRecipesQuery } from '../helpers';
 
 interface Props {
   recipeId: string;
 }
-
-const mapIdentity = <T,>(x: T) => x;
 
 const RecipeView: React.FC<Props> = ({ recipeId }) => {
   const dispatch = useDispatch<DispatchType>();
@@ -38,27 +37,28 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
       setCurrentList(undefined);
     }
   }
-  const { data: recipes, fetching: loading, error: errorOccurred } = useRecipesQuery(
-    //useMergedRecipesQuery(
-    [recipeId],
-    [
-      'averageRating',
-      'cookTime',
-      'directions',
-      'imageURL',
-      'ingredients',
-      'isPrivate',
-      'lastModified',
-      'name',
-      'prepTime',
-      'servings',
-      'userRating',
-      'isMine'
-    ]
-  ); // ,
-  //   mapIdentity
-  // );
+  const { recipes, loading, errorOccurred } = useMergedRecipesQuery(
+    useRecipesQuery(
+      [recipeId],
+      [
+        'averageRating',
+        'cookTime',
+        'directions',
+        'imageURL',
+        'ingredients',
+        'isPrivate',
+        'lastModified',
+        'name',
+        'prepTime',
+        'servings',
+        'userRating',
+        'isMine'
+      ]
+    ),
+    x => x
+  );
   const recipe = recipes?.[0];
+  console.log('recipe', recipe);
   const { goBack } = useContext(HistoryContext);
   useEventListener(window, 'resize', () => {
     updateCurrentList();
@@ -98,8 +98,9 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
                   onChange={rating => dispatch(rate(recipe.id, rating))}
                 />
               </div>
-              <div className={classes.servings}>{recipe.servings} servings,&nbsp;</div>
-              <div className={classes.time}>
+              <div>{recipe.averageRating?.toFixed(1)}-star average rating,&nbsp;</div>
+              <div>{recipe.servings} servings,&nbsp;</div>
+              <div>
                 {recipe.prepTime}min preparation + {recipe.cookTime}min cooking
               </div>
             </div>

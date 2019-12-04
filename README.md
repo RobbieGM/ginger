@@ -11,7 +11,6 @@ A simple recipe manager to learn React, Redux, GraphQL, TypeORM, and testing.
 ## To-do:
 
 - Basic functionality
-  - Rating
   - Searching
   - Lists (popular, new)
 - Potential future problems

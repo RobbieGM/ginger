@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { useMemory } from 'helpers';
 import { useSelector, useDispatch } from 'react-redux';
@@ -45,6 +45,20 @@ function useDialogQueue() {
   };
 }
 
+/**
+ * A drop-in replacement for useEffect, but doesn't run on the first render.
+ */
+function useWatch(effect: () => void, dependencies: any[]) {
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (!isFirstRender.current) {
+      effect();
+    }
+    isFirstRender.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies);
+}
+
 const SNACKBAR_TIMEOUT = 2000;
 
 function useCurrentSnackbar() {
@@ -52,7 +66,7 @@ function useCurrentSnackbar() {
   const snackbars = useSelector((state: AppState) => state.queuedSnackbars);
   const snackbar: Snackbar | undefined = snackbars[0];
   const lastSnackbar = useMemory(snackbar);
-  useEffect(() => {
+  useWatch(() => {
     setTimeout(() => {
       dispatch(dismissSnackbar());
     }, SNACKBAR_TIMEOUT);
@@ -78,7 +92,10 @@ const CoreUIProvider: React.FC = ({ children }) => {
     >
       {children}
       <div className={classNames(classes.modalOverlay, dialogs.current && classes.active)} />
-      <div className={classNames(classes.modalDialog, dialogs.current && classes.active)}>
+      <div
+        className={classNames(classes.modalDialog, dialogs.current && classes.active)}
+        aria-live='assertive'
+      >
         <div className={classes.dialogContent}>
           <h2>{visibleDialog && visibleDialog.title}</h2>
           {visibleDialog && visibleDialog.message}
