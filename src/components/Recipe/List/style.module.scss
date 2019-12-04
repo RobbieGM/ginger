@@ -60,10 +60,10 @@
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: space-around;
       & > * {
         display: flex;
         align-items: center;
-        flex: 1;
       }
       .highlighted.star svg {
         color: $yellow;

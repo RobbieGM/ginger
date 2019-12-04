@@ -98,7 +98,9 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
                   onChange={rating => dispatch(rate(recipe.id, rating))}
                 />
               </div>
-              <div>{recipe.averageRating?.toFixed(1)}-star average rating,&nbsp;</div>
+              {recipe.averageRating && (
+                <div>{recipe.averageRating?.toFixed(1)}-star average rating,&nbsp;</div>
+              )}
               <div>{recipe.servings} servings,&nbsp;</div>
               <div>
                 {recipe.prepTime}min preparation + {recipe.cookTime}min cooking

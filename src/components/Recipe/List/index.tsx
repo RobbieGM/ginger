@@ -90,7 +90,7 @@ const RecipeList: React.FC<Props> = ({
                         aria-label={recipe.userRating ? 'Your rating' : 'Average rating'}
                       >
                         <Star />
-                        {recipe.userRating ?? recipe.averageRating}
+                        {(recipe.userRating ?? recipe.averageRating)?.toFixed?.(1)}
                       </div>
                     )}
                     <div aria-label='Total time'>
