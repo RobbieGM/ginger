@@ -27,7 +27,10 @@ const rootReducer = combineReducers(
   (reducers as unknown) as ReducersMapObject<AppState, AppAction>
 );
 
-export const createStoreWithClient = (client: Client) => {
+export const createStoreWithClient = (
+  client: Client,
+  transformReducer?: (reducer: typeof rootReducer) => typeof rootReducer
+) => {
   const store = createStore(
     persistReducer<AppState, AppAction>(
       {
@@ -45,7 +48,7 @@ export const createStoreWithClient = (client: Client) => {
           // createCompressor()
         ]
       },
-      rootReducer
+      transformReducer?.(rootReducer) ?? rootReducer
     ),
     compose(
       applyMiddleware(thunk.withExtraArgument(client)),

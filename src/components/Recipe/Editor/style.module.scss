@@ -59,14 +59,6 @@ $max-width: 500px;
       }
     }
   }
-  input::placeholder {
-    color: $text-light;
-    opacity: 0.8;
-  }
-  input:focus::placeholder {
-    // color: $light-gray;
-    opacity: 0.5;
-  }
 }
 
 .form .imageUploadContainer {

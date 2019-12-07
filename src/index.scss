@@ -54,3 +54,12 @@ input.reset {
   border: none;
   appearance: none;
 }
+
+input::placeholder {
+  color: $text-light;
+  opacity: 0.8;
+}
+input:focus::placeholder {
+  // color: $light-gray;
+  opacity: 0.5;
+}

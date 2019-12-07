@@ -16,7 +16,7 @@ export const createRecipe = (
   forceOfflineSave?: boolean
 ): ActionType<Promise<boolean>> => async (dispatch, _stateGetter, client) => {
   if (navigator.onLine && !forceOfflineSave) {
-    const result: OperationResult<PartialRecipe> = await client
+    const result: OperationResult<PartialRecipe[]> = await client
       .query(CREATE_RECIPE, { recipe })
       .toPromise();
     if (result.data) {

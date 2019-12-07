@@ -22,11 +22,10 @@ const MyRecipesTab: React.FC = () => {
   const { showModalDialog } = useContext(CoreUIContext);
   type QueryData = { myRecipes: RecipePreview[] };
   const [queryState, refresh] = useQuery<QueryData>({
-    query: GET_MY_RECIPES,
-    requestPolicy: 'network-only'
+    query: GET_MY_RECIPES
   });
   const dataToRecipes = useCallback((data: QueryData) => data.myRecipes, []);
-  const { recipes, loading, errorOccurred } = useMergedRecipesQuery(queryState, dataToRecipes);
+  const { recipes, loading, error } = useMergedRecipesQuery(queryState, dataToRecipes);
   const {
     mounted: newRecipeFormMounted,
     visible: newRecipeFormOpen,
@@ -68,7 +67,7 @@ const MyRecipesTab: React.FC = () => {
       <RecipeList
         recipes={recipes}
         loading={loading}
-        errorOccurred={errorOccurred}
+        error={error}
         errorMessage={<>An error occurred while fetching your recipes</>}
         emptyState={
           <>

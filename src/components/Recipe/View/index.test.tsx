@@ -1,6 +1,6 @@
 import React from 'react';
 import AppState, { Recipe } from 'store/state';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act, RenderResult } from '@testing-library/react';
 import { Provider } from 'test-helpers';
 import Urql, { Client, UseQueryState } from 'urql';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -55,7 +55,9 @@ const recipe: RecipeType = {
 //   jest.spyOn(Urql, 'useQuery').mockImplementation(mocked);
 // }
 
-function setup(rootReducer?: Reducer<AppState & PersistPartial, AppAction> | undefined) {
+async function setup(
+  rootReducer?: (state: AppState | undefined, action: AppAction) => AppState | undefined
+) {
   const transformClient = (client: Client) => {
     jest.spyOn(client, 'executeQuery').mockImplementation(() =>
       fromValue({
@@ -67,17 +69,21 @@ function setup(rootReducer?: Reducer<AppState & PersistPartial, AppAction> | und
     );
     return client;
   };
-  return render(
-    <Provider transformClient={transformClient} rootReducer={rootReducer}>
-      <CoreUIProvider>
-        <RecipeView recipeId={recipe.id} />
-      </CoreUIProvider>
-    </Provider>
-  );
+  let renderResult: RenderResult = null as any;
+  await act(async () => {
+    renderResult = render(
+      <Provider transformClient={transformClient} rootReducer={rootReducer}>
+        <CoreUIProvider>
+          <RecipeView recipeId={recipe.id} />
+        </CoreUIProvider>
+      </Provider>
+    );
+  });
+  return renderResult;
 }
 
 it('shows all essential recipe data', async () => {
-  const { findByText, findAllByText } = setup();
+  const { findByText, findAllByText } = await setup();
   expect(await findAllByText(recipe.name.toString())).toHaveLength(2);
   expect(await findByText(recipe.cookTime.toString(), { exact: false })).toBeTruthy();
   expect(await findByText(recipe.prepTime.toString(), { exact: false })).toBeTruthy();
@@ -87,15 +93,12 @@ it('shows all essential recipe data', async () => {
 });
 
 it('allows the user to bookmark the recipe', async done => {
-  const { findByText, findByLabelText } = setup(
-    (
-      state = { queuedSnackbars: [], recipes: [], _persist: { version: 0, rehydrated: false } },
-      action
-    ) => {
+  const { findByText, findByLabelText } = await setup(
+    (state = { queuedSnackbars: [], recipes: [] }, action) => {
       if (action.type === 'SET_BOOKMARK_DATE') {
         done();
       }
-      return state;
+      return undefined;
     }
   );
   fireEvent.click(await findByLabelText('More options'));
@@ -103,9 +106,9 @@ it('allows the user to bookmark the recipe', async done => {
 }, 1000);
 
 it('shows an error message when rating the recipe fails', async () => {
-  jest.spyOn(console, 'error').mockImplementation(() => undefined); // suppress "cannot connect" error
-  const { findByLabelText, findByText } = setup();
+  const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined); // suppress "cannot connect" error
+  const { findByLabelText, findByText } = await setup();
   fireEvent.click(await findByLabelText('4 stars'));
   expect(await findByText('Failed to rate', { exact: false })).toBeTruthy();
-  jest.clearAllMocks();
+  consoleError.mockRestore();
 });

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import deepEqual from 'dequal';
-import { UseQueryState } from 'urql';
+import { UseQueryState, CombinedError } from 'urql';
 import { DispatchType } from 'store/store';
 import { Recipe } from '../../backend/data-types/Recipe';
 import AppState, { PartialRecipe } from '../../store/state';
@@ -10,37 +10,54 @@ import { mergeRecipes } from './actions';
 import { useRecipesQuery } from './queries';
 
 /**
+ * Merges recipes into the store once loaded from the query. and returns their ids.
+ *
+ * @param mapDataToResult Describes how recipes are to be extracted from the query response.
+ */
+export function useMergedRecipeIds<T extends keyof Recipe, TData>(
+  request: UseQueryState<TData>,
+  mapDataToResult: (data: TData) => Pick<Recipe, T | 'id'>[]
+) {
+  const [merged, setMerged] = useState(false);
+  const dispatch = useDispatch<DispatchType>();
+  useDeepCompareEffect(() => {
+    if (request.data /* && !merged */) {
+      dispatch(mergeRecipes(...mapDataToResult(request.data)));
+      setMerged(true);
+    }
+  }, [dispatch, request]);
+  const idsOfFetched = request.data
+    ? mapDataToResult(request.data).map(recipe => recipe.id)
+    : undefined;
+  return {
+    ids: idsOfFetched,
+    merged,
+    loading: request.fetching,
+    error: request.error
+  };
+}
+
+/**
  * Automatically merges recipes from a graphql query once when they are loaded, then returns an updating
  * version of them synchronized with the store.
- * @param query The query to merge
  */
 export function useMergedRecipesQuery<T extends keyof Recipe, TData>(
   request: UseQueryState<TData>,
   mapDataToResult: (data: TData) => Pick<Recipe, T | 'id'>[]
 ) {
   type ReturnedRecipe = PartialRecipe & ReturnType<typeof mapDataToResult>[number];
-  const [merged, setMerged] = useState(false);
-  const dispatch = useDispatch<DispatchType>();
-  useDeepCompareEffect(() => {
-    if (request.data && !merged) {
-      dispatch(mergeRecipes(...mapDataToResult(request.data)));
-      setMerged(true);
-    }
-  }, [dispatch, mapDataToResult, request]);
-  const idsOfFetched = request.data
-    ? mapDataToResult(request.data).map(recipe => recipe.id)
-    : undefined;
+  const { ids, merged } = useMergedRecipeIds(request, mapDataToResult);
   const recipesFromStore = useSelector(
     (state: AppState) =>
-      idsOfFetched && merged
-        ? idsOfFetched.map(id => state.recipes.find(recipe => recipe.id === id) as ReturnedRecipe)
+      ids && merged
+        ? ids.map(id => state.recipes.find(recipe => recipe.id === id) as ReturnedRecipe)
         : undefined,
     deepEqual
   ); // Undefined if not fetched
   return {
     recipes: recipesFromStore,
     loading: request.fetching,
-    errorOccurred: !!request.error
+    error: request.error
   };
 }
 
@@ -52,7 +69,7 @@ export function recipeHasFields<T extends keyof Recipe>(
 }
 
 /**
- * A react hook to get recipes from server, auto merge them into the store, and return them.
+ * A hook to get recipes from server, auto merge them into the store, and return them.
  *
  * @param recipeIds The ids of the recipes to query
  * @param fields The fields needed from the recipes
@@ -62,7 +79,7 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
   interface RecipeResponse {
     recipes: RequestedRecipeType[] | undefined;
     loading: boolean;
-    errorOccurred: boolean;
+    error: CombinedError | undefined;
   }
   const isNotNull = <T>(x: T | undefined | null): x is T => x !== undefined && x !== null;
   const storedRecipes = useSelector((state: AppState) => state.recipes, deepEqual);
@@ -79,11 +96,10 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
       ? []
       : recipeIds.filter(id => !recipeIdAvailableInStore(id));
   const missingRecipesQuery = useRecipesQuery(missingRecipeIds, ['id', ...fields]);
-  const errorOccurredInQuery = !!missingRecipesQuery.error;
   const [result, setResult] = useState<RecipeResponse>({
     recipes: undefined,
     loading: false,
-    errorOccurred: false
+    error: undefined
   });
   useDeepCompareEffect(() => {
     if (missingRecipeIds.length > 0) {
@@ -98,19 +114,19 @@ export function usePartialRecipes<T extends keyof Recipe>(recipeIds: string[], f
           ? recipeIds.map(findInStoreOrFetched).filter(isNotNull)
           : undefined,
         loading: missingRecipesQuery.fetching,
-        errorOccurred: errorOccurredInQuery
+        error: missingRecipesQuery.error
       });
     } else {
       setResult({
         recipes: storedRecipesWithAllFields,
         loading: false,
-        errorOccurred: false
+        error: undefined
       });
     }
   }, [
     missingRecipeIds.length,
     missingRecipesQuery.data,
-    errorOccurredInQuery,
+    missingRecipesQuery.error,
     missingRecipesQuery.fetching,
     recipeIds,
     setResult,

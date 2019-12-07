@@ -37,7 +37,7 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
       setCurrentList(undefined);
     }
   }
-  const { recipes, loading, errorOccurred } = useMergedRecipesQuery(
+  const { recipes, loading, error } = useMergedRecipesQuery(
     useRecipesQuery(
       [recipeId],
       [
@@ -58,7 +58,6 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
     x => x
   );
   const recipe = recipes?.[0];
-  console.log('recipe', recipe);
   const { goBack } = useContext(HistoryContext);
   useEventListener(window, 'resize', () => {
     updateCurrentList();
@@ -71,7 +70,7 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
           <ArrowLeft />
         </button>
         <span className={topBarClasses.title}>
-          {recipe ? recipe.name : loading ? 'Loading...' : errorOccurred ? 'Error' : ''}
+          {recipe ? recipe.name : loading ? 'Loading...' : error ? 'Error' : ''}
         </span>
         {recipe && <RecipeViewMoreOptions recipe={recipe} />}
       </div>
@@ -141,7 +140,7 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
           </>
         )}
         {loading && <Loading className={classes.loading} />}
-        {errorOccurred && <>An error occurred when fetching this recipe.</>}
+        {error && <>An error occurred when fetching this recipe.</>}
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ function useFrozenValue<T>(currentValue: T, isFrozen: boolean) {
 const RecipeViewMoreOptions: React.FC<Props> = ({ recipe }) => {
   const dispatch = useDispatch<DispatchType>();
   const [isVisible, setVisible] = useState(false);
-  const isAtAllVisible = useMounted(isVisible, 200);
+  const isAtAllVisible = useMounted(isVisible, 200 + 50);
   const delayedBookmarkDate = useFrozenValue(recipe.bookmarkDate, isAtAllVisible);
   useEventListener(document.body, 'click', () => {
     if (isVisible) setVisible(false);

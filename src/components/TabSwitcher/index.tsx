@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
+import SearchTab from 'components/Tab/Search';
 import PopularTab from '../Tab/Popular';
 import BottomNavigation, { Tab } from '../BottomNavigation';
 import SavedTab from '../Tab/Saved';
@@ -29,7 +30,7 @@ const tabs: Tab[] = [
   {
     label: 'Search',
     icon: Search,
-    component: <SavedTab />
+    component: <SearchTab />
   }
 ];
 

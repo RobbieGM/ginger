@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Bookmark, Star, Clock, Users } from 'react-feather';
 import { HistoryContext } from 'components/HistoryProvider';
+import { CombinedError } from 'urql';
 import classes from './style.module.scss';
 import { DispatchType } from '../../../store/store';
 import { Recipe } from '../../../backend/data-types/Recipe';
@@ -13,13 +14,13 @@ import { ReactComponent as Loading } from '../../../assets/loading.svg';
 interface Props {
   recipes: RecipePreview[] | undefined;
   loading: boolean;
-  errorOccurred: boolean;
-  errorMessage: JSX.Element;
-  emptyState: JSX.Element;
+  error: CombinedError | undefined;
+  errorMessage: JSX.Element | string;
+  emptyState: JSX.Element | string;
   /**
    * A function called to load more recipes into the RecipeList, used for infinite scrolling.
    */
-  loadMore: () => Promise<RecipePreview[]>;
+  loadMore: () => void;
 }
 
 /**
@@ -30,7 +31,7 @@ interface Props {
 const RecipeList: React.FC<Props> = ({
   recipes,
   loading,
-  errorOccurred,
+  error,
   emptyState,
   errorMessage,
   loadMore
@@ -49,9 +50,7 @@ const RecipeList: React.FC<Props> = ({
 
   return (
     <div className={classes.recipeList}>
-      {loading ? (
-        <Loading />
-      ) : recipes && recipes.length ? (
+      {recipes && recipes.length ? (
         <>
           <div className={classes.recipeCardContainer}>
             {recipes.map(recipe => (
@@ -106,14 +105,15 @@ const RecipeList: React.FC<Props> = ({
               </a>
             ))}
           </div>
+          {loading && <Loading />}
           <button onClick={loadMore}>Load more</button>
         </>
       ) : recipes ? (
         emptyState
-      ) : errorOccurred ? (
+      ) : error ? (
         errorMessage
       ) : (
-        <span style={{ display: 'none' }}>This error should not show</span>
+        ''
       )}
     </div>
   );

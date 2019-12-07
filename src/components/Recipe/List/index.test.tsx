@@ -32,7 +32,7 @@ function setupWithRecipe() {
       <RecipeList
         recipes={recipes}
         loading={false}
-        errorOccurred={false}
+        error={false}
         errorMessage={<></>}
         emptyState={<></>}
         loadMore={() => Promise.resolve([])}
@@ -60,7 +60,7 @@ it('shows the empty state when no recipes exist', () => {
       <RecipeList
         recipes={[]}
         loading={false}
-        errorOccurred={false}
+        error={false}
         errorMessage={<></>}
         emptyState={<>empty state</>}
         loadMore={() => Promise.resolve([])}
@@ -76,7 +76,7 @@ it('shows a spinner when loading', () => {
       <RecipeList
         recipes={[]}
         loading
-        errorOccurred={false}
+        error={false}
         errorMessage={<></>}
         emptyState={<></>}
         loadMore={() => Promise.resolve([])}
@@ -92,7 +92,7 @@ it('shows an error message when recipes fail to load', () => {
       <RecipeList
         recipes={undefined}
         loading={false}
-        errorOccurred
+        error
         errorMessage={<span>error occurred</span>}
         emptyState={<></>}
         loadMore={() => Promise.resolve([])}

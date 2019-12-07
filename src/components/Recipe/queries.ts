@@ -11,13 +11,17 @@ export const CREATE_RECIPE = `
 
 export const SET_BOOKMARK_DATE = `
   mutation SetBookmarkDate($date: Float, $id: String!) {
-    setBookmarkDate(date: $date, recipeId: $id)
+    setBookmarkDate(date: $date, recipeId: $id) {
+      id
+    }
   }
 `;
 
 export const RATE = `
   mutation Rate($rating: Int!, $id: String!) {
-    setRating(rating: $rating, recipeId: $id)
+    setRating(rating: $rating, recipeId: $id) {
+      id
+    }
   }
 `;
 

@@ -1,0 +1,13 @@
+@import '../../../variables';
+
+input.search {
+  width: 300px;
+  max-width: 100%;
+  background: $translucent-white;
+  box-shadow: $shadow-high;
+  border-radius: 3px;
+  border: none;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 12px;
+}

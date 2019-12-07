@@ -48,6 +48,20 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     return recipes;
   }
 
+  @Query(returns => [Recipe])
+  async search(
+    @Arg('query') query: string,
+    @Arg('skip', type => Int) skip: number,
+    @Arg('results', type => Int) results: number
+  ) {
+    const recipes = await this.manager.query(
+      'select * from "recipe" where title @@ (:query) order by ts_rank(to_tsvector("english", title), to_tsquery("english", :query)) desc limit :results offset :skip',
+      { query, results, skip } as any
+    );
+    console.log('recipes from search', recipes);
+    return recipes;
+  }
+
   @Authorized()
   @Mutation(returns => [Recipe])
   async mergeRecipes(
@@ -92,16 +106,17 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         })
       )
     );
-    return updatedRecipesForClient;
+    // Return even the recipes the client knows about--urql will only invalidate caches that way
+    return (updatedRecipesForClient as RecipeInput[]).concat(createdRecipes);
   }
 
   @Authorized()
-  @Mutation(returns => Boolean, { nullable: true })
+  @Mutation(returns => Recipe, { nullable: true })
   async setRating(
     @Arg('rating', type => Int) rating: number,
     @Arg('recipeId') recipeId: string,
     @Ctx() { userId }: Context
-  ) {
+  ): Promise<Partial<Recipe> | undefined> {
     const existingRating = await this.manager.findOne(Rating, {
       where: {
         recipe: {
@@ -112,7 +127,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         }
       }
     });
-    if (existingRating && rating === existingRating.value) return;
+    if (existingRating && rating === existingRating.value) return undefined;
     if (existingRating) await this.manager.remove(existingRating);
     await this.manager.save(Rating, {
       user: {
@@ -124,15 +139,16 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       value: rating,
       date: Date.now()
     });
+    return { id: recipeId };
   }
 
   @Authorized()
-  @Mutation(returns => Boolean, { nullable: true })
+  @Mutation(returns => Recipe, { nullable: true })
   async setBookmarkDate(
     @Arg('recipeId') recipeId: string,
     @Arg('date', type => Float, { nullable: true }) date: number | undefined,
     @Ctx() { userId }: Context
-  ) {
+  ): Promise<Partial<Recipe>> {
     const existingBookmark = await this.manager.findOne(Bookmark, {
       where: {
         recipe: {
@@ -155,6 +171,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         date
       });
     }
+    return { id: recipeId };
   }
 
   @Authorized()

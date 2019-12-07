@@ -9,7 +9,7 @@ const PopularTab: React.FC = () => {
       <RecipeList
         recipes={[]}
         loading
-        errorOccurred={false}
+        error={undefined}
         errorMessage={<>An error occurred, please try again.</>}
         emptyState={<>There are no popular recipes right now.</>}
         loadMore={async () => []}
