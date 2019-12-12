@@ -41,7 +41,7 @@ function useAuth() {
   return state;
 }
 
-const AuthenticationProvider: React.FC<{}> = ({ children }) => {
+const AuthenticationGate: React.FC<{}> = ({ children }) => {
   const state = useAuth();
   return state === AuthState.AUTHENTICATED ? (
     <>{children}</>
@@ -51,4 +51,4 @@ const AuthenticationProvider: React.FC<{}> = ({ children }) => {
     <>Failed to authenticate; try reloading the page or clearing this site&apos;s cookies.</>
   );
 };
-export default AuthenticationProvider;
+export default AuthenticationGate;

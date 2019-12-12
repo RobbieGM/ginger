@@ -17,24 +17,32 @@ interface Props {
   error: CombinedError | undefined;
   errorMessage: JSX.Element | string;
   emptyState: JSX.Element | string;
+  canLoadMore?: boolean;
   /**
-   * A function called to load more recipes into the RecipeList, used for infinite scrolling.
+   * A function called to load more recipes into the RecipeList, used for infinite scrolling. Also called on first render.
    */
-  loadMore: () => void;
+  loadNext: () => void;
 }
 
 /**
  * Displays a list of recipes.
  *
- * @param getRecipeIds an async generator that returns ids of recipes to be fetched from the store.
+ * @param recipes Recipes to display
+ * @param loading Whether more recipes are loading or not
+ * @param error The error that occurred, if it exists
+ * @param canLoadMore Whether more recipes exist that may be loaded
+ * @param emptyState The JSX to show if no recipes exist and no error occurred
+ * @param errorMessage The error message to show if an error occurred
+ * @param loadNext A function to load more recipes
  */
 const RecipeList: React.FC<Props> = ({
   recipes,
   loading,
   error,
+  canLoadMore,
   emptyState,
   errorMessage,
-  loadMore
+  loadNext
 }) => {
   const dispatch = useDispatch<DispatchType>();
   const toggleBookmark = (recipe: Pick<Recipe, 'id' | 'bookmarkDate'>) => {
@@ -44,7 +52,7 @@ const RecipeList: React.FC<Props> = ({
   const viewRecipe = (id: string) => browserHistory.push(`/recipe/${id}`);
 
   useEffect(() => {
-    loadMore();
+    // loadNext();
     // eslint-disable-next-line
   }, []);
 
@@ -105,16 +113,18 @@ const RecipeList: React.FC<Props> = ({
               </a>
             ))}
           </div>
-          {loading && <Loading />}
-          <button onClick={loadMore}>Load more</button>
+          {canLoadMore && (
+            <button onClick={loadNext} className={classes.loadMore}>
+              Load more
+            </button>
+          )}
         </>
-      ) : recipes ? (
+      ) : recipes && recipes.length === 0 && !error && !loading ? (
         emptyState
-      ) : error ? (
-        errorMessage
       ) : (
         ''
       )}
+      {error ? errorMessage : loading ? <Loading className={classes.loadingSpinner} /> : ''}
     </div>
   );
 };

@@ -1,7 +1,7 @@
-// import 'reflect-metadata';
-// import express from 'express';
-// import { GeneratingSchemaError } from 'type-graphql';
-// import { applyApiServerMiddleware } from '../api-middleware';
+import 'reflect-metadata';
+import express from 'express';
+import { GeneratingSchemaError } from 'type-graphql';
+import { applyApiServerMiddleware } from '../api-middleware';
 
 // const app = express();
 

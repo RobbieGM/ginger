@@ -1,12 +1,12 @@
-import 'reflect-metadata';
-import express from 'express';
-import cookieParser from 'cookie-parser';
+// import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
-import { buildSchema, GeneratingSchemaError, MiddlewareFn } from 'type-graphql';
-import { createConnection, useContainer } from 'typeorm';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import { buildSchema, MiddlewareFn } from 'type-graphql';
 import { Container } from 'typedi';
-import { Context } from './Context';
+import { createConnection, useContainer } from 'typeorm';
 import { Authenticator } from './AuthChecker';
+import { Context } from './Context';
 
 const interceptErrors: MiddlewareFn<Context> = ({ context, info }, next) => {
   return next().catch(err => {

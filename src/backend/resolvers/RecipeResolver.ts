@@ -14,6 +14,7 @@ import {
 import { InjectManager } from 'typeorm-typedi-extensions';
 import { Service } from 'typedi';
 import { EntityManager, In, DeepPartial } from 'typeorm';
+import { InfiniteRecipeScrollResult } from '../data-types/InfiniteRecipeScrollResult';
 import { Recipe } from '../data-types/Recipe';
 import { RecipeInput } from '../api-input/RecipeInput';
 import { Context } from '../Context';
@@ -48,18 +49,23 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     return recipes;
   }
 
-  @Query(returns => [Recipe])
+  @Query(returns => InfiniteRecipeScrollResult)
   async search(
     @Arg('query') query: string,
     @Arg('skip', type => Int) skip: number,
-    @Arg('results', type => Int) results: number
+    @Arg('results', type => Int) limit: number
   ) {
-    const recipes = await this.manager.query(
-      'select * from "recipe" where title @@ (:query) order by ts_rank(to_tsvector("english", title), to_tsquery("english", :query)) desc limit :results offset :skip',
-      { query, results, skip } as any
+    console.debug('searching for', query, 'with offset', skip);
+    const results: Partial<
+      Recipe
+    >[] = await this.manager.query(
+      `select * from "recipe" where name @@ $1 order by ts_rank(to_tsvector('english', name), plainto_tsquery('english', $2)) desc limit $3 offset $4`,
+      [query, query, limit + 1, skip]
     );
-    console.log('recipes from search', recipes);
-    return recipes;
+    const canLoadMore = results.length === limit + 1;
+    if (canLoadMore) results.pop();
+    console.debug('recipes from search', results, 'can load more', canLoadMore);
+    return { results, canLoadMore };
   }
 
   @Authorized()

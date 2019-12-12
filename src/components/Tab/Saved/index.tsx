@@ -42,7 +42,7 @@ const SavedTab: React.FC = () => {
             Saved recipes are stored for offline use.
           </>
         }
-        loadMore={async () => []}
+        loadNext={() => undefined}
       />
     </div>
   );

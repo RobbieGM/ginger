@@ -140,7 +140,7 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
           </>
         )}
         {loading && <Loading className={classes.loading} />}
-        {error && <>An error occurred when fetching this recipe.</>}
+        {error && <>An error occurred when loading this recipe.</>}
       </div>
     </div>
   );

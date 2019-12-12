@@ -32,10 +32,10 @@ function setupWithRecipe() {
       <RecipeList
         recipes={recipes}
         loading={false}
-        error={false}
+        error={undefined}
         errorMessage={<></>}
         emptyState={<></>}
-        loadMore={() => Promise.resolve([])}
+        loadNext={() => Promise.resolve([])}
       />
     </Provider>
   );
@@ -60,10 +60,10 @@ it('shows the empty state when no recipes exist', () => {
       <RecipeList
         recipes={[]}
         loading={false}
-        error={false}
+        error={undefined}
         errorMessage={<></>}
         emptyState={<>empty state</>}
-        loadMore={() => Promise.resolve([])}
+        loadNext={() => undefined}
       />
     </Provider>
   );
@@ -76,10 +76,10 @@ it('shows a spinner when loading', () => {
       <RecipeList
         recipes={[]}
         loading
-        error={false}
+        error={undefined}
         errorMessage={<></>}
         emptyState={<></>}
-        loadMore={() => Promise.resolve([])}
+        loadNext={() => undefined}
       />
     </Provider>
   );
@@ -92,10 +92,10 @@ it('shows an error message when recipes fail to load', () => {
       <RecipeList
         recipes={undefined}
         loading={false}
-        error
+        error={{ name: 'oopsie', message: 'an error happened.', graphQLErrors: [] }}
         errorMessage={<span>error occurred</span>}
         emptyState={<></>}
-        loadMore={() => Promise.resolve([])}
+        loadNext={() => Promise.resolve([])}
       />
     </Provider>
   );

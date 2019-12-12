@@ -84,3 +84,24 @@
     fill: rgba($green, 0.5);
   }
 }
+
+.loadMore {
+  margin-top: 12px;
+  padding: 4px 16px;
+  background: rgba($green, 0.2);
+  color: $green;
+  // box-shadow: $shadow-close;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 999px;
+  &:active,
+  &[data-focus-visible-added] {
+    transition: none;
+    background: rgba($green, 0.4);
+  }
+}
+
+.loadingSpinner {
+  display: block;
+  margin: 8px auto;
+}

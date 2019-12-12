@@ -12,7 +12,7 @@ const PopularTab: React.FC = () => {
         error={undefined}
         errorMessage={<>An error occurred, please try again.</>}
         emptyState={<>There are no popular recipes right now.</>}
-        loadMore={async () => []}
+        loadNext={() => undefined}
       />
     </div>
   );

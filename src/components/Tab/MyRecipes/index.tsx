@@ -68,14 +68,14 @@ const MyRecipesTab: React.FC = () => {
         recipes={recipes}
         loading={loading}
         error={error}
-        errorMessage={<>An error occurred while fetching your recipes</>}
+        errorMessage={<>An error occurred while loading your recipes</>}
         emptyState={
           <>
             You haven&apos;t created any recipes yet. Click the plus button in the bottom right to
             get cooking!
           </>
         }
-        loadMore={async () => []}
+        loadNext={async () => []}
       />
       <button
         className={myRecipesClasses.addButtonContainer}
