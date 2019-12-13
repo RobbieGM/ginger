@@ -1,17 +1,16 @@
 import { RecipeInput } from 'backend/api-input/RecipeInput';
+import { InfiniteRecipeScrollResult } from 'backend/data-types/InfiniteRecipeScrollResult';
 import classNames from 'classnames';
+import { useInfiniteScrollRecipeQuery } from 'components/Recipe/List/infinite-scroll';
 import { useDelayedVisibility } from 'helpers';
 import nanoid from 'nanoid';
-import React, { useCallback, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Plus } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
-import { useQuery } from 'urql';
 import { CoreUIContext } from '../../CoreUIProvider';
 import RecipeEditor from '../../Recipe/Editor';
-import { useMergedRecipesQuery } from '../../Recipe/helpers';
 import RecipeList from '../../Recipe/List';
-import { RecipePreview } from '../../Recipe/List/queries';
 import baseClasses from '../style.module.scss';
 import { createRecipe } from './actions';
 import { GET_MY_RECIPES } from './queries';
@@ -20,12 +19,24 @@ import myRecipesClasses from './style.module.scss';
 const MyRecipesTab: React.FC = () => {
   const dispatch = useDispatch<DispatchType>();
   const { showModalDialog } = useContext(CoreUIContext);
-  type QueryData = { myRecipes: RecipePreview[] };
-  const [queryState, refresh] = useQuery<QueryData>({
-    query: GET_MY_RECIPES
-  });
-  const dataToRecipes = useCallback((data: QueryData) => data.myRecipes, []);
-  const { recipes, loading, error } = useMergedRecipesQuery(queryState, dataToRecipes);
+  // type QueryData = { myRecipes: RecipePreview[] };
+  // const [queryState, refresh] = useQuery<QueryData>({
+  //   query: GET_MY_RECIPES
+  // });
+  // const dataToRecipes = useCallback((data: QueryData) => data.myRecipes, []);
+  // const { recipes, loading, error } = useMergedRecipesQuery(queryState, dataToRecipes);
+  const { recipes, loading, error, loadNext, canLoadMore, reload } = useInfiniteScrollRecipeQuery<{
+    myRecipes: InfiniteRecipeScrollResult;
+  }>(
+    ({ offset, results }) => ({
+      query: GET_MY_RECIPES,
+      variables: { skip: offset, results }
+    }),
+    data => data.myRecipes
+  );
+  useEffect(() => {
+    loadNext();
+  }, [loadNext]);
   const {
     mounted: newRecipeFormMounted,
     visible: newRecipeFormOpen,
@@ -36,7 +47,7 @@ const MyRecipesTab: React.FC = () => {
     const recipeWithId = { id: nanoid(), ...recipeData };
     const successful = await dispatch(createRecipe(recipeWithId));
     if (successful) {
-      refresh({ requestPolicy: 'network-only' });
+      reload();
       hide();
     } else {
       showModalDialog({
@@ -75,7 +86,8 @@ const MyRecipesTab: React.FC = () => {
             get cooking!
           </>
         }
-        loadNext={async () => []}
+        canLoadMore={canLoadMore}
+        loadNext={loadNext}
       />
       <button
         className={myRecipesClasses.addButtonContainer}

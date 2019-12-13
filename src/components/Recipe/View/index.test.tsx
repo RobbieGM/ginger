@@ -1,14 +1,12 @@
-import React from 'react';
-import AppState, { Recipe } from 'store/state';
-import { render, fireEvent, act, RenderResult } from '@testing-library/react';
-import { Provider } from 'test-helpers';
-import Urql, { Client, UseQueryState } from 'urql';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { fromValue } from 'wonka';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import { Recipe } from 'backend/data-types/Recipe';
 import CoreUIProvider from 'components/CoreUIProvider';
-import { Reducer } from 'redux';
-import { PersistPartial } from 'redux-persist/lib/persistReducer';
+import React from 'react';
 import { AppAction } from 'store/actions';
+import AppState from 'store/state';
+import { Provider } from 'test-helpers';
+import { Client } from 'urql';
+import { fromValue } from 'wonka';
 import RecipeView from '.';
 
 type RecipeType = Pick<

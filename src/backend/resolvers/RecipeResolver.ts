@@ -34,9 +34,13 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   }
 
   @Authorized()
-  @Query(returns => [Recipe])
-  async myRecipes(@Ctx() context: Context) {
-    const recipes = this.manager.find(Recipe, {
+  @Query(returns => InfiniteRecipeScrollResult)
+  async myRecipes(
+    @Arg('skip', type => Int) skip: number,
+    @Arg('results', type => Int) limit: number,
+    @Ctx() context: Context
+  ) {
+    const results = await this.manager.find(Recipe, {
       where: {
         user: {
           id: context.userId
@@ -44,9 +48,13 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       },
       order: {
         lastModified: 'DESC'
-      }
+      },
+      take: limit + 1,
+      skip
     });
-    return recipes;
+    const canLoadMore = results.length === limit + 1;
+    if (canLoadMore) results.pop();
+    return { results, canLoadMore };
   }
 
   @Query(returns => InfiniteRecipeScrollResult)

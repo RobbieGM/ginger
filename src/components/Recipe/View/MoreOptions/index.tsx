@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { Share, Copy, Bookmark, Edit2, Trash2, MoreHorizontal } from 'react-feather';
+import { Recipe } from 'backend/data-types/Recipe';
 import classNames from 'classnames';
 import { setBookmarkDate } from 'components/Recipe/actions';
-import { Recipe } from 'store/state';
 import { useEventListener, useMounted } from 'helpers';
+import React, { useRef, useState } from 'react';
+import { Bookmark, Copy, Edit2, MoreHorizontal, Share, Trash2 } from 'react-feather';
+import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
-import classes from './style.module.scss';
 import topBarClasses from '../../../../top-bar.module.scss';
+import classes from './style.module.scss';
 
 type MoreOptionsRecipeFields = Pick<Recipe, 'id' | 'name' | 'isMine' | 'bookmarkDate'>;
 
