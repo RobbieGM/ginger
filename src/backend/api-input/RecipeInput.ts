@@ -1,5 +1,6 @@
 import { InputType, Field, ID, Int } from 'type-graphql';
 import { MaxLength, Matches } from 'class-validator';
+import { Recipe } from '../data-types/Recipe';
 
 @InputType()
 export class RecipeInput implements Partial<Recipe> {

@@ -14,7 +14,8 @@ button.addButtonContainer {
   cursor: pointer;
   box-shadow: $shadow-high;
   svg {
-    color: $light-gray;
+    color: black;
+    opacity: 0.6;
   }
   transition: background 0.2s, box-shadow 0.2s;
   &:active,

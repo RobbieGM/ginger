@@ -113,7 +113,7 @@ const RecipeList: React.FC<Props> = ({
               </a>
             ))}
           </div>
-          {canLoadMore && (
+          {canLoadMore && !loading && (
             <button onClick={loadNext} className={classes.loadMore}>
               Load more
             </button>

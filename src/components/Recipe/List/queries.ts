@@ -1,4 +1,4 @@
-import { Recipe } from '../../../store/state';
+import { Recipe } from 'backend/data-types/Recipe';
 
 const tuple = <T extends string[]>(...args: T) => args;
 

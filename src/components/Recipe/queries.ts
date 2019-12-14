@@ -1,5 +1,5 @@
 import { useQuery, UseQueryState } from 'urql';
-import { Recipe } from '../../store/state';
+import { Recipe } from 'backend/data-types/Recipe';
 
 export const CREATE_RECIPE = `
   mutation CreateRecipe($recipe: RecipeInput!) {
