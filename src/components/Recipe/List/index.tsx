@@ -1,25 +1,42 @@
-import React, { useEffect, useContext } from 'react';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
-import { Bookmark, Star, Clock, Users } from 'react-feather';
 import { HistoryContext } from 'components/HistoryProvider';
+import { useEventListener, throttle } from 'helpers';
+import React, { useContext } from 'react';
+import { Bookmark, Clock, Star, Users } from 'react-feather';
+import { useDispatch } from 'react-redux';
 import { CombinedError } from 'urql';
-import classes from './style.module.scss';
-import { DispatchType } from '../../../store/store';
-import { Recipe } from '../../../backend/data-types/Recipe';
-import { RecipePreview } from './queries';
-import { setBookmarkDate } from '../actions';
 import { ReactComponent as Loading } from '../../../assets/loading.svg';
+import { Recipe } from '../../../backend/data-types/Recipe';
+import { DispatchType } from '../../../store/store';
+import { setBookmarkDate } from '../actions';
+import { RecipePreview } from './queries';
+import classes from './style.module.scss';
+
+const INFINITE_SCROLL_DISTANCE_THRESHOLD = 300; // px
+const INFINITE_SCROLL_THROTTLE = 500; // ms
 
 interface Props {
   recipes: RecipePreview[] | undefined;
   loading: boolean;
+  /**
+   * The error that occurred, or undefined if no error exists.
+   */
   error: CombinedError | undefined;
   errorMessage: JSX.Element | string;
+  /**
+   * What to show when no recipes exist and the container is not loading and no error has occurred
+   */
   emptyState: JSX.Element | string;
+  /**
+   * Whether more recipes can be loaded. Assumed to be true at first.
+   */
   canLoadMore?: boolean;
   /**
-   * A function called to load more recipes into the RecipeList, used for infinite scrolling. Also called on first render.
+   * Which element the list scrolls in, used for infinite scrolling. Either an element or `window`.
+   */
+  scrollContainer?: HTMLElement | Window;
+  /**
+   * A function called to load more recipes into the RecipeList, used for infinite scrolling. Not called on first render
    */
   loadNext: () => void;
 }
@@ -42,6 +59,7 @@ const RecipeList: React.FC<Props> = ({
   canLoadMore,
   emptyState,
   errorMessage,
+  scrollContainer,
   loadNext
 }) => {
   const dispatch = useDispatch<DispatchType>();
@@ -51,10 +69,29 @@ const RecipeList: React.FC<Props> = ({
   const browserHistory = useContext(HistoryContext);
   const viewRecipe = (id: string) => browserHistory.push(`/recipe/${id}`);
 
-  useEffect(() => {
-    // loadNext();
-    // eslint-disable-next-line
-  }, []);
+  useEventListener(
+    scrollContainer,
+    'scroll',
+    throttle(() => {
+      function loadMoreIfCloseToBottom(distanceFromBottom: number) {
+        if (!loading && canLoadMore && distanceFromBottom < INFINITE_SCROLL_DISTANCE_THRESHOLD) {
+          console.log('loading more');
+          loadNext();
+        }
+      }
+      if (scrollContainer instanceof HTMLElement) {
+        const scrollTopMax = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        const distanceFromBottom = scrollTopMax - scrollContainer.scrollTop;
+        loadMoreIfCloseToBottom(distanceFromBottom);
+      } else if (scrollContainer instanceof Window) {
+        const scrollTopMax =
+          document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const distanceFromBottom = scrollTopMax - pageYOffset;
+        loadMoreIfCloseToBottom(distanceFromBottom);
+      }
+    }, INFINITE_SCROLL_THROTTLE),
+    { passive: true, capture: true }
+  );
 
   return (
     <div className={classes.recipeList}>

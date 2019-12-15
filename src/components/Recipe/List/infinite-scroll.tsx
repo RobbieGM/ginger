@@ -11,7 +11,7 @@ const getRecipeInfiniteScrollInitialState = (pageSize: number) => ({
   pageSize,
   recipeIds: [] as string[],
   loading: false,
-  canLoadMore: false,
+  canLoadMore: true,
   error: undefined as CombinedError | undefined
 });
 type RecipeInfiniteScrollState = ReturnType<typeof getRecipeInfiniteScrollInitialState>;
@@ -35,11 +35,14 @@ function recipeInfiniteScrollReducer(
 ): RecipeInfiniteScrollState {
   switch (action.type) {
     case 'LOAD_MORE':
-      return {
-        ...state,
-        error: undefined,
-        loading: true
-      };
+      if (state.canLoadMore) {
+        return {
+          ...state,
+          error: undefined,
+          loading: true
+        };
+      }
+      return state;
     case 'RESOLVE_QUERY':
       return {
         ...state,
@@ -89,7 +92,7 @@ export function useInfiniteScrollRecipeQuery<
     results: number;
   }) => UseQueryArgs<object> & Required<Pick<UseQueryArgs<object>, 'variables'>>,
   mapDataToResult: (data: TData) => { results: Pick<Recipe, T | 'id'>[]; canLoadMore: boolean },
-  pageSize = 1 // 20
+  pageSize = 20
 ) {
   type ReturnedRecipe = { id: string } & Pick<Recipe, T | 'id'>;
   const storeDispatch = useDispatch<Dispatch<AppAction>>();

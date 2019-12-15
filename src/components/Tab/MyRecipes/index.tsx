@@ -86,6 +86,7 @@ const MyRecipesTab: React.FC = () => {
             get cooking!
           </>
         }
+        scrollContainer={window}
         canLoadMore={canLoadMore}
         loadNext={loadNext}
       />

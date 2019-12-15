@@ -1,14 +1,13 @@
 import { InfiniteRecipeScrollResult } from 'backend/data-types/InfiniteRecipeScrollResult';
 import RecipeList from 'components/Recipe/List';
 import { useInfiniteScrollRecipeQuery } from 'components/Recipe/List/infinite-scroll';
+import { debounce } from 'helpers';
 import React, { useRef } from 'react';
 import baseClasses from '../style.module.scss';
-import { debounce } from './helpers';
 import { SEARCH } from './queries';
 import classes from './style.module.scss';
 
 const SearchTab: React.FC = () => {
-  // const [query, setQuery] = useState<string | undefined>();
   const queryRef = useRef('');
   const { recipes, loading, error, canLoadMore, loadNext, reload } = useInfiniteScrollRecipeQuery<{
     search: InfiniteRecipeScrollResult;
@@ -38,6 +37,7 @@ const SearchTab: React.FC = () => {
           canLoadMore={canLoadMore}
           emptyState='No results found'
           errorMessage='Failed to search for recipes. Please try again later.'
+          scrollContainer={window}
           loadNext={loadNext}
         />
       )}

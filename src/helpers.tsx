@@ -95,10 +95,41 @@ export const animatable = <TProps,>(
  * @param element The element to add the handler to
  * @param type The event to listen to (e.g., "click")
  * @param listener the event handler to attach
+ * @param options The options to pass to addEventListener
  */
-export function useEventListener(element: EventTarget, type: string, listener: () => void) {
+export function useEventListener(
+  element: EventTarget | undefined,
+  type: string,
+  listener: EventListener | EventListenerObject,
+  options?: boolean | AddEventListenerOptions
+) {
   useEffect(() => {
-    element.addEventListener(type, listener);
-    return () => element.removeEventListener(type, listener);
+    element?.addEventListener?.(type, listener, options);
+    return () => element?.removeEventListener?.(type, listener);
   });
+}
+
+export function debounce<T extends (...args: any[]) => any>(func: T, delay: number) {
+  let timeout: number | undefined;
+  return ((...args: any[]) => {
+    const delayed = ((...innerArgs: any[]) => {
+      timeout = undefined;
+      return func(...innerArgs);
+    }) as T;
+    clearTimeout(timeout);
+    timeout = window.setTimeout(delayed.bind(null, ...args), delay);
+  }) as T;
+}
+
+export function throttle<T extends (...args: any[]) => any>(func: T, delay: number) {
+  let waiting = false;
+  return ((...args: any[]) => {
+    if (!waiting) {
+      func(...args);
+      waiting = true;
+      setTimeout(() => {
+        waiting = false;
+      }, delay);
+    }
+  }) as T;
 }
