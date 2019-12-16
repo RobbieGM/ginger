@@ -31,7 +31,7 @@ export class RecipeInput implements Partial<Recipe> {
   directions: string[];
 
   @Field({ nullable: true })
-  imageURL: string;
+  imageURL?: string;
 
   @Field()
   lastModified: number;

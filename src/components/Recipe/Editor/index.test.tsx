@@ -9,7 +9,7 @@ const setup = (onSubmit: (recipe: Omit<RecipeInput, 'id'>) => void, close?: () =
   render(
     <Provider>
       <CoreUIProvider>
-        <RecipeEditor intent='create' close={() => {}} onSubmit={onSubmit} />
+        <RecipeEditor intent='create' close={() => undefined} onSubmit={onSubmit} />
       </CoreUIProvider>
     </Provider>
   );

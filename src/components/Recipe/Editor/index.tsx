@@ -1,13 +1,18 @@
-import React, { useState, useRef, useContext } from 'react';
-import { X, Image, Check } from 'react-feather';
+import { RecipeInput } from 'backend/api-input/RecipeInput';
 import classNames from 'classnames';
+import { CoreUIContext } from 'components/CoreUIProvider';
+import { showSnackbar } from 'components/CoreUIProvider/actions';
 import ListEditor from 'components/ListEditor';
 import { KeyedList } from 'components/ListEditor/types';
-import { CoreUIContext } from 'components/CoreUIProvider';
-import { RecipeInput } from 'backend/api-input/RecipeInput';
-import classes from './style.module.scss';
+import React, { useContext, useRef, useState } from 'react';
+import { Check, Image, X } from 'react-feather';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { AppAction } from 'store/actions';
 import topBarClasses from '../../../top-bar.module.scss';
 import listEditorClasses from '../../ListEditor/style.module.scss';
+import { useImageUpload } from './helpers';
+import classes from './style.module.scss';
 import VisibilityChooser from './VisibilityChooser';
 
 interface Props {
@@ -19,7 +24,13 @@ interface Props {
 const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) => {
   const [recipeName, setRecipeName] = useState('');
   const [isPrivate, setPrivate] = useState(false);
-  const [imageURL, setImageUrl] = useState('');
+  const {
+    imageURL,
+    uploading: imageUploading,
+    error: imageUploadError,
+    upload: uploadImage
+  } = useImageUpload();
+  console.log('url', imageURL, 'uploading', imageUploading, 'error', imageUploadError);
   const [prepTime, setPrepTime] = useState<number | undefined>();
   const [cookTime, setCookTime] = useState<number | undefined>();
   const [servings, setServings] = useState<number | undefined>();
@@ -28,20 +39,22 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
 
   const imageInput = useRef<HTMLInputElement>(null);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const dispatch = useDispatch<Dispatch<AppAction>>();
   const { showModalDialog } = useContext(CoreUIContext);
+
   function promptImageFileInput() {
     if (imageInput && imageInput.current) {
       imageInput.current.click();
     }
   }
-  function setImage(files: FileList | null) {
-    if (files && files[0]) {
-      const file = files[0];
-      if (['image/png', 'image/jpeg'].includes(file.type)) {
-        const url = URL.createObjectURL(file);
-        setImageUrl(url);
-      }
+  async function setImage(files: FileList | null) {
+    if (files == null || files[0] == null) return;
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      dispatch(showSnackbar('That file is not an image'));
+      return;
     }
+    uploadImage(file);
   }
   async function close() {
     const hasUnsavedData = [

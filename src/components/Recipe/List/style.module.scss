@@ -53,6 +53,7 @@
   }
   .bottomContent {
     font-family: $sans;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.35));
     h3 {
       margin-bottom: 8px;
     }
