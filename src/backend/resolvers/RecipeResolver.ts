@@ -61,14 +61,15 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   async search(
     @Arg('query') query: string,
     @Arg('skip', type => Int) skip: number,
-    @Arg('results', type => Int) limit: number
+    @Arg('results', type => Int) limit: number,
+    @Ctx() { userId }: Context
   ) {
     console.debug('searching for', query, 'with offset', skip);
     const results: Partial<
       Recipe
     >[] = await this.manager.query(
-      `select * from "recipe" where name @@ $1 order by ts_rank(to_tsvector('english', name), plainto_tsquery('english', $2)) desc limit $3 offset $4`,
-      [query, query, limit + 1, skip]
+      `select * from "recipe" where name @@ $1 and ("userId" = $2 or not "isPrivate") order by ts_rank(to_tsvector('english', name), plainto_tsquery('english', $3)) desc limit $4 offset $5`,
+      [query, userId, query, limit + 1, skip]
     );
     const canLoadMore = results.length === limit + 1;
     if (canLoadMore) results.pop();

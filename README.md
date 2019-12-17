@@ -12,13 +12,12 @@ A simple recipe manager to learn React, Redux, GraphQL, TypeORM, and testing.
 
 - Basic functionality
   - Recipes
-    - Delete, edit, add picture
-  - Searching
+    - Delete, edit
   - Lists (popular, new)
+- Make it offline (https://create-react-app.dev/docs/making-a-progressive-web-app/)
 - Potential future problems
   - Make bookmarking retrieve and save the entire recipe so it's really all offline
   - Disable body scroll (with `body-scroll-lock`, very small bundle size) when a RecipeView is showing
-- Make it offline (https://create-react-app.dev/docs/making-a-progressive-web-app/)
 - Optimization, when most everything else is done:
   - Watch the bundle size (https://create-react-app.dev/docs/analyzing-the-bundle-size/)
   - Replace React with Preact
