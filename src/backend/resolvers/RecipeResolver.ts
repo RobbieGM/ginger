@@ -64,7 +64,6 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     @Arg('results', type => Int) limit: number,
     @Ctx() { userId }: Context
   ) {
-    console.debug('searching for', query, 'with offset', skip);
     const results: Partial<
       Recipe
     >[] = await this.manager.query(
@@ -73,7 +72,6 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     );
     const canLoadMore = results.length === limit + 1;
     if (canLoadMore) results.pop();
-    console.debug('recipes from search', results, 'can load more', canLoadMore);
     return { results, canLoadMore };
   }
 
@@ -123,6 +121,21 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     );
     // Return even the recipes the client knows about--urql will only invalidate caches that way
     return (updatedRecipesForClient as RecipeInput[]).concat(createdRecipes);
+  }
+
+  @Authorized()
+  @Mutation(returns => Recipe)
+  async delete(@Arg('recipeId') recipeId: string, @Ctx() { userId }: Context) {
+    const deletedRecipe = await this.manager.findOneOrFail(Recipe, {
+      where: {
+        id: recipeId,
+        user: {
+          id: userId
+        }
+      }
+    });
+    this.manager.remove(deletedRecipe);
+    return deletedRecipe;
   }
 
   @Authorized()

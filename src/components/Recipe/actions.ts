@@ -2,7 +2,7 @@ import { ActionType } from 'store/store';
 import { showErrorIfPresent } from 'components/CoreUIProvider/helpers';
 import { PartialRecipe } from '../../store/state';
 import { createAction, ActionWithPayload } from '../../store/actions';
-import { SET_BOOKMARK_DATE, RATE } from './queries';
+import { SET_BOOKMARK_DATE, RATE, DELETE_RECIPE } from './queries';
 
 export const mergeRecipes = (...recipes: PartialRecipe[]) => createAction('MERGE_RECIPES', recipes);
 
@@ -30,6 +30,20 @@ export const setBookmarkDate = (id: string, date: number | undefined): ActionTyp
   );
 };
 
+type DeleteRecipeAction = ActionWithPayload<'DELETE_RECIPE', string>;
+export const deleteRecipe = (id: string): ActionType<void> => (dispatch, getState, client) => {
+  client
+    .mutation(DELETE_RECIPE, { recipeId: id })
+    .toPromise()
+    .then(response => {
+      if (response.data) {
+        dispatch(createAction('DELETE_RECIPE', id));
+      }
+      return response;
+    })
+    .then(showErrorIfPresent('Failed to delete recipe', dispatch));
+};
+
 export const rate = (id: string, rating: number): ActionType<void> => (
   dispatch,
   getState,
@@ -44,4 +58,7 @@ export const rate = (id: string, rating: number): ActionType<void> => (
 
 export type BasicAction = ReturnType<typeof mergeRecipes>;
 
-export type RecipeAction = BasicAction | SetBookmarkDateAction;
+export type RecipeAction =
+  | ReturnType<typeof mergeRecipes>
+  | SetBookmarkDateAction
+  | DeleteRecipeAction;

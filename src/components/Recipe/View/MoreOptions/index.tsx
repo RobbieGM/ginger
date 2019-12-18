@@ -1,6 +1,6 @@
 import { Recipe } from 'backend/data-types/Recipe';
 import classNames from 'classnames';
-import { setBookmarkDate } from 'components/Recipe/actions';
+import { setBookmarkDate, deleteRecipe } from 'components/Recipe/actions';
 import { useEventListener, useMounted } from 'helpers';
 import React, { useRef, useState } from 'react';
 import { Bookmark, Copy, Edit2, MoreHorizontal, Share, Trash2 } from 'react-feather';
@@ -13,6 +13,7 @@ type MoreOptionsRecipeFields = Pick<Recipe, 'id' | 'name' | 'isMine' | 'bookmark
 
 interface Props {
   recipe: MoreOptionsRecipeFields;
+  onDelete?: () => void;
 }
 
 function useFrozenValue<T>(currentValue: T, isFrozen: boolean) {
@@ -23,7 +24,7 @@ function useFrozenValue<T>(currentValue: T, isFrozen: boolean) {
   return prevValueRef.current;
 }
 
-const RecipeViewMoreOptions: React.FC<Props> = ({ recipe }) => {
+const RecipeViewMoreOptions: React.FC<Props> = ({ recipe, onDelete }) => {
   const dispatch = useDispatch<DispatchType>();
   const [isVisible, setVisible] = useState(false);
   const isAtAllVisible = useMounted(isVisible, 200 + 50);
@@ -71,7 +72,12 @@ const RecipeViewMoreOptions: React.FC<Props> = ({ recipe }) => {
               <Edit2 />
               Edit
             </button>
-            <button>
+            <button
+              onClick={() => {
+                dispatch(deleteRecipe(recipe.id));
+                onDelete?.();
+              }}
+            >
               <Trash2 />
               Delete
             </button>

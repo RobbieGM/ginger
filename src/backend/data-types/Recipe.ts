@@ -21,7 +21,8 @@ export class Recipe {
   @Field(type => User)
   @ManyToOne(
     type => User,
-    user => user.recipes
+    user => user.recipes,
+    { onDelete: 'CASCADE' }
   )
   user: User;
 

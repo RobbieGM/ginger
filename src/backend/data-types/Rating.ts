@@ -18,10 +18,10 @@ export class Rating {
   date: number;
 
   @Field(type => User)
-  @ManyToOne(type => User)
+  @ManyToOne(type => User, { onDelete: 'CASCADE' })
   user: User;
 
   @Field(type => Recipe)
-  @ManyToOne(type => Recipe)
+  @ManyToOne(type => Recipe, { onDelete: 'CASCADE' })
   recipe: Recipe;
 }

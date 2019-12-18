@@ -1,6 +1,6 @@
 import { HistoryContext } from 'components/HistoryProvider';
 import Rating from 'components/Rating';
-import { useEventListener } from 'helpers';
+import { useEventListener, useMemory } from 'helpers';
 import React, { useContext, useRef, useState } from 'react';
 import { ArrowLeft, Eye, Lock } from 'react-feather';
 import { useDispatch } from 'react-redux';
@@ -15,9 +15,10 @@ import { useMergedRecipesQuery } from '../helpers';
 
 interface Props {
   recipeId: string;
+  hide?: () => void;
 }
 
-const RecipeView: React.FC<Props> = ({ recipeId }) => {
+const RecipeView: React.FC<Props> = ({ recipeId, hide }) => {
   const dispatch = useDispatch<DispatchType>();
   const [currentList, setCurrentList] = useState<'ingredients' | 'directions' | undefined>();
   const ingredientsAndDirections = useRef<HTMLDivElement>(null);
@@ -57,7 +58,7 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
     ),
     x => x
   );
-  const recipe = recipes?.[0];
+  const recipe = useMemory(recipes?.[0]); // useMemory to avoid insta-disappearing data on delete
   const { goBack } = useContext(HistoryContext);
   useEventListener(window, 'resize', () => {
     updateCurrentList();
@@ -72,7 +73,7 @@ const RecipeView: React.FC<Props> = ({ recipeId }) => {
         <span className={topBarClasses.title}>
           {recipe ? recipe.name : loading ? 'Loading...' : error ? 'Error' : ''}
         </span>
-        {recipe && <RecipeViewMoreOptions recipe={recipe} />}
+        {recipe && <RecipeViewMoreOptions recipe={recipe} onDelete={hide} />}
       </div>
       <div className={classes.main}>
         {recipe && (

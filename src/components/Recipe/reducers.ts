@@ -37,6 +37,8 @@ export function recipes(state: PartialRecipe[] = [], action: AppAction): Partial
           ? { ...recipe, bookmarkDate: action.payload.date }
           : recipe
       );
+    case 'DELETE_RECIPE':
+      return state.filter(recipe => recipe.id !== action.payload);
     default:
       return state;
   }

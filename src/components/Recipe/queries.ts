@@ -9,6 +9,14 @@ export const CREATE_RECIPE = `
   }
 `;
 
+export const DELETE_RECIPE = `
+  mutation DeleteRecipe($recipeId: String!) {
+    delete(recipeId: $recipeId) {
+      id
+    }
+  }
+`;
+
 export const SET_BOOKMARK_DATE = `
   mutation SetBookmarkDate($date: Float, $id: String!) {
     setBookmarkDate(date: $date, recipeId: $id) {

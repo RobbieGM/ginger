@@ -11,13 +11,15 @@ export class Bookmark {
 
   @ManyToOne(
     type => User,
-    user => user.bookmarks
+    user => user.bookmarks,
+    { onDelete: 'CASCADE' }
   )
   public user: User;
 
   @ManyToOne(
     type => Recipe,
-    recipe => recipe.bookmarks
+    recipe => recipe.bookmarks,
+    { onDelete: 'CASCADE' }
   )
   public recipe: Recipe;
 

@@ -31,6 +31,8 @@ const App: React.FC<{}> = () => {
   const path = loc.pathname.split('/').slice(1);
   const recipeId = path[0] === 'recipe' && path[1] ? path[1] : undefined;
   const tabSwitcherVisible = useMounted(!recipeId, 300);
+  const hideRecipeView = () =>
+    browserHistory.canGoBackWithoutLeaving() ? history.back() : history.replaceState({}, '', '/');
   return (
     <div id='app' onTouchStart={touchStart} onTouchEnd={touchEnd} onTouchCancel={touchEnd}>
       <CoreUIProvider>
@@ -41,7 +43,7 @@ const App: React.FC<{}> = () => {
         >
           <TabSwitcher />
         </div>
-        <AnimatableRecipeView recipeId={recipeId} />
+        <AnimatableRecipeView recipeId={recipeId} hide={hideRecipeView} />
       </CoreUIProvider>
     </div>
   );

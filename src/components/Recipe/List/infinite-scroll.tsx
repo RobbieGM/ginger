@@ -102,9 +102,6 @@ export function useInfiniteScrollRecipeQuery<
     pageSize,
     getRecipeInfiniteScrollInitialState
   );
-  const recipes = useSelector((appState: AppState) =>
-    state.recipeIds.map(id => appState.recipes.find(recipe => recipe.id === id) as ReturnedRecipe)
-  );
   async function loadNext() {
     const { query, variables, context } = getQueryArgs({
       offset: state.recipeIds.length,
@@ -133,6 +130,11 @@ export function useInfiniteScrollRecipeQuery<
     if (state.loading) loadNext();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.loading]);
+  const recipes = useSelector((appState: AppState) =>
+    state.recipeIds
+      .map(id => appState.recipes.find(recipe => recipe.id === id) as ReturnedRecipe | undefined)
+      .filter((r: ReturnedRecipe | undefined): r is ReturnedRecipe => r != null)
+  ); // filter for deleted recipes that still showed up previously in the query
   return {
     recipes,
     loading: state.loading,

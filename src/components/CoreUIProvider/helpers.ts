@@ -7,6 +7,7 @@ import { showSnackbar } from './actions';
  *
  * @param errorMessage The error message to show
  * @param dispatch A dispatch function for the store
+ * @param ignoreIfOffline Won't show errors if offline and this parameter is true
  * @param result The operation to show an error for if it fails
  */
 export const showErrorIfPresent = (
