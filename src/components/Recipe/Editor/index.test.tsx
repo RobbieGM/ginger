@@ -25,7 +25,7 @@ it('returns the inputted recipe data when it is valid', async done => {
       isPrivate: true,
       ingredients: ['ingredient 1'],
       directions: ['step 1'],
-      imageURL: '',
+      imageURL: undefined,
       lastModified: expect.anything()
     };
     expect(recipe).toEqual(expected);

@@ -103,6 +103,22 @@ it('allows the user to bookmark the recipe', async done => {
   fireEvent.click(await findByText('Add to saved'));
 }, 1000);
 
+it('allows the user to delete the recipe', async done => {
+  const onLine = jest.spyOn(navigator, 'onLine', 'get');
+  onLine.mockImplementation(() => false);
+  const { findByText, findByLabelText } = await setup(
+    (state = { queuedSnackbars: [], recipes: [] }, action) => {
+      if (action.type === 'DELETE_RECIPE') {
+        done();
+      }
+      return undefined;
+    }
+  );
+  fireEvent.click(await findByLabelText('More options'));
+  fireEvent.click(await findByText('Delete'));
+  onLine.mockRestore();
+}, 1000);
+
 it('shows an error message when rating the recipe fails', async () => {
   const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined); // suppress "cannot connect" error
   const { findByLabelText, findByText } = await setup();

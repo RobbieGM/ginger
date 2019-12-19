@@ -30,7 +30,6 @@ const RecipeEditor: React.FC<Props> = ({ intent, close: forceClose, onSubmit }) 
     error: imageUploadError,
     upload: uploadImage
   } = useImageUpload();
-  console.log('url', imageURL, 'uploading', imageUploading, 'error', imageUploadError);
   const [prepTime, setPrepTime] = useState<number | undefined>();
   const [cookTime, setCookTime] = useState<number | undefined>();
   const [servings, setServings] = useState<number | undefined>();

@@ -30,18 +30,22 @@ export const setBookmarkDate = (id: string, date: number | undefined): ActionTyp
   );
 };
 
-type DeleteRecipeAction = ActionWithPayload<'DELETE_RECIPE', string>;
+type DeleteRecipeAction = ActionWithPayload<'DELETE_RECIPE', { id: string; needsSync: boolean }>;
 export const deleteRecipe = (id: string): ActionType<void> => (dispatch, getState, client) => {
-  client
-    .mutation(DELETE_RECIPE, { recipeId: id })
-    .toPromise()
-    .then(response => {
-      if (response.data) {
-        dispatch(createAction('DELETE_RECIPE', id));
-      }
-      return response;
-    })
-    .then(showErrorIfPresent('Failed to delete recipe', dispatch));
+  if (navigator.onLine) {
+    client
+      .mutation(DELETE_RECIPE, { recipeId: id })
+      .toPromise()
+      .then(response => {
+        if (response.data) {
+          dispatch(createAction('DELETE_RECIPE', { id, needsSync: false }));
+        }
+        return response;
+      })
+      .then(showErrorIfPresent('Failed to delete recipe', dispatch));
+  } else {
+    dispatch(createAction('DELETE_RECIPE', { id, needsSync: true }));
+  }
 };
 
 export const rate = (id: string, rating: number): ActionType<void> => (

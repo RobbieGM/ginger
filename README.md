@@ -15,6 +15,7 @@ A simple recipe manager to learn React, Redux, GraphQL, TypeORM, and testing.
     - Delete, edit
   - Lists (popular, new)
 - Make it offline (https://create-react-app.dev/docs/making-a-progressive-web-app/)
+  - Deletion queue needed because mergeRecipes won't "pass through" deletion to the server
 - Potential future problems
   - Make bookmarking retrieve and save the entire recipe so it's really all offline
   - Disable body scroll (with `body-scroll-lock`, very small bundle size) when a RecipeView is showing
