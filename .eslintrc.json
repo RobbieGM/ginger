@@ -1,7 +1,16 @@
 {
-  "extends": ["airbnb", "prettier", "plugin:@typescript-eslint/recommended"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "prettier", "react-hooks", "babel"],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "react-hooks",
+    "babel"
+  ],
   "parserOptions": {
     "ecmaVersion": 2019,
     "sourceType": "module"
@@ -14,14 +23,20 @@
   },
   "settings": {
     "import/parsers": {
-      "@typescript-eslint/parser": [".ts", ".tsx"]
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
     },
     "import/resolver": {
       "typescript": {}
     }
   },
   "rules": {
-    "eqeqeq": [2, "smart"],
+    "eqeqeq": [
+      2,
+      "smart"
+    ],
     "no-unused-expressions": 0,
     "babel/no-unused-expressions": 2,
     "no-nested-ternary": 0,
@@ -55,13 +70,23 @@
     "react/jsx-filename-extension": [
       2,
       {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
       }
     ],
     "import/no-extraneous-dependencies": [
       2,
       {
-        "devDependencies": ["**/*test.tsx", "**/*test.ts"]
+        "devDependencies": [
+          "**/*test.tsx",
+          "**/*test.ts",
+          "**/testing/*.ts",
+          "**/testing/**/*.ts"
+        ]
       }
     ]
   }
