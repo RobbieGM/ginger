@@ -38,12 +38,12 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   async myRecipes(
     @Arg('skip', type => Int) skip: number,
     @Arg('results', type => Int) limit: number,
-    @Ctx() context: Context
+    @Ctx() ctx: Context
   ) {
     const results = await this.manager.find(Recipe, {
       where: {
         user: {
-          id: context.userId
+          id: ctx.userId
         }
       },
       order: {
@@ -62,13 +62,13 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     @Arg('query') query: string,
     @Arg('skip', type => Int) skip: number,
     @Arg('results', type => Int) limit: number,
-    @Ctx() { userId }: Context
+    @Ctx() ctx: Context
   ) {
     const results: Partial<
       Recipe
     >[] = await this.manager.query(
       `select * from "recipe" where name @@ $1 and ("userId" = $2 or not "isPrivate") order by ts_rank(to_tsvector('english', name), plainto_tsquery('english', $3)) desc limit $4 offset $5`,
-      [query, userId, query, limit + 1, skip]
+      [query, ctx.userId, query, limit + 1, skip]
     );
     const canLoadMore = results.length === limit + 1;
     if (canLoadMore) results.pop();
@@ -79,7 +79,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   @Mutation(returns => [Recipe])
   async mergeRecipes(
     @Arg('recipes', type => [RecipeInput]) recipes: RecipeInput[],
-    @Ctx() context: Context
+    @Ctx() ctx: Context
   ) {
     const updatedRecipesForClient: Recipe[] = [];
     const editedRecipes: Recipe[] = [];
@@ -90,7 +90,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       relations: ['user']
     });
     const conflictingRecipesForUser = allConflictingRecipes.filter(
-      recipe => recipe.user.id === context.userId
+      recipe => recipe.user.id === ctx.userId
     ); // Consists only of recipes the user may update
     conflictingRecipesForUser.forEach(serverRecipe => {
       const clientRecipe = recipes.find(r => r.id === serverRecipe.id)!;
@@ -115,7 +115,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
         save({
           ...recipe,
           creationDate: recipe.lastModified,
-          user: { id: context.userId }
+          user: { id: ctx.userId }
         })
       )
     );
@@ -125,12 +125,12 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @Mutation(returns => Recipe)
-  async delete(@Arg('recipeId') recipeId: string, @Ctx() { userId }: Context) {
+  async delete(@Arg('recipeId') recipeId: string, @Ctx() ctx: Context) {
     const deletedRecipe = await this.manager.findOneOrFail(Recipe, {
       where: {
         id: recipeId,
         user: {
-          id: userId
+          id: ctx.userId
         }
       }
     });
@@ -143,7 +143,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   async setRating(
     @Arg('rating', type => Int) rating: number,
     @Arg('recipeId') recipeId: string,
-    @Ctx() { userId }: Context
+    @Ctx() ctx: Context
   ): Promise<Partial<Recipe> | undefined> {
     const existingRating = await this.manager.findOne(Rating, {
       where: {
@@ -151,7 +151,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
           id: recipeId
         },
         user: {
-          id: userId
+          id: ctx.userId
         }
       }
     });
@@ -159,7 +159,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     if (existingRating) await this.manager.remove(existingRating);
     await this.manager.save(Rating, {
       user: {
-        id: userId
+        id: ctx.userId
       },
       recipe: {
         id: recipeId
@@ -175,7 +175,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
   async setBookmarkDate(
     @Arg('recipeId') recipeId: string,
     @Arg('date', type => Float, { nullable: true }) date: number | undefined,
-    @Ctx() { userId }: Context
+    @Ctx() ctx: Context
   ): Promise<Partial<Recipe>> {
     const existingBookmark = await this.manager.findOne(Bookmark, {
       where: {
@@ -183,7 +183,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
           id: recipeId
         },
         user: {
-          id: userId
+          id: ctx.userId
         }
       }
     });
@@ -191,7 +191,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     if (date != null) {
       await this.manager.save(Bookmark, {
         user: {
-          id: userId
+          id: ctx.userId
         },
         recipe: {
           id: recipeId
@@ -204,22 +204,22 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @FieldResolver()
-  async isMine(@Root() { id }: Recipe, @Ctx() { userId }: Context) {
+  async isMine(@Root() recipe: Recipe, @Ctx() ctx: Context) {
     const thisRecipe = await this.manager.findOne(Recipe, {
       where: {
-        id,
-        user: { id: userId }
+        id: recipe.id,
+        user: { id: ctx.userId }
       }
     });
     return !!thisRecipe;
   }
 
   @FieldResolver()
-  async averageRating(@Root() { id }: Recipe) {
+  async averageRating(@Root() recipe: Recipe) {
     const ratings = await this.manager.find(Rating, {
       where: {
         recipe: {
-          id
+          id: recipe.id
         }
       }
     });
@@ -231,17 +231,14 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @FieldResolver()
-  async bookmarkDate(
-    @Root() { id }: Recipe,
-    @Ctx() { userId }: Context
-  ): Promise<number | undefined> {
+  async bookmarkDate(@Root() recipe: Recipe, @Ctx() ctx: Context): Promise<number | undefined> {
     const bookmark = await this.manager.findOne(Bookmark, {
       where: {
         user: {
-          id: userId
+          id: ctx.userId
         },
         recipe: {
-          id
+          id: recipe.id
         }
       }
     });
@@ -250,15 +247,15 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
 
   @Authorized()
   @FieldResolver()
-  async userRating(@Root() { id }: Recipe, @Ctx() context: Context) {
-    if (!context.userId) return undefined;
+  async userRating(@Root() recipe: Recipe, @Ctx() ctx: Context) {
+    if (!ctx.userId) return undefined;
     const rating = await this.manager.findOne(Rating, {
       where: {
         user: {
-          id: context.userId
+          id: ctx.userId
         },
         recipe: {
-          id
+          id: recipe.id
         }
       }
     });
