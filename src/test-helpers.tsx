@@ -21,7 +21,7 @@ export const Provider: React.FC<Props> = ({
   if (process.env.NODE_ENV !== 'test') {
     throw new Error('The mono-provider is not to be used outside a test environment.');
   }
-  const [apiClient] = useState(() => transformClient(createClient({ url: '' })));
+  const [apiClient] = useState(() => transformClient(createClient({ url: '/' })));
   const transformReducer = (rootReducer: Reducer<AppState, AppAction>): typeof rootReducer => (
     state,
     action

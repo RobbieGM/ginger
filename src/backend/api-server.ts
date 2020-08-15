@@ -1,8 +1,10 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import { GeneratingSchemaError } from 'type-graphql';
 import { applyApiServerMiddleware } from './api-middleware';
 
 const app = express();
+dotenv.config();
 
 async function bootstrap() {
   const { graphqlPath } = await applyApiServerMiddleware(app);

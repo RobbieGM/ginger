@@ -7,6 +7,13 @@ import { Container } from 'typedi';
 import { createConnection, useContainer } from 'typeorm';
 import { Authenticator } from './AuthChecker';
 import { Context } from './Context';
+import { Bookmark } from './data-types/Bookmark';
+import { InfiniteRecipeScrollResult } from './data-types/InfiniteRecipeScrollResult';
+import { Rating } from './data-types/Rating';
+import { Recipe } from './data-types/Recipe';
+import { User } from './data-types/User';
+import { RecipeResolver } from './resolvers/RecipeResolver';
+import { UserResolver } from './resolvers/UserResolver';
 
 const interceptErrors: MiddlewareFn<Context> = ({ context, info }, next) => {
   return next().catch(err => {
@@ -23,13 +30,13 @@ export async function applyApiServerMiddleware(app: express.Express) {
   await createConnection({
     type: 'postgres',
     url,
-    entities: [`${__dirname}/data-types/**/*.ts`],
+    entities: [Bookmark, InfiniteRecipeScrollResult, Rating, Recipe, User],
     synchronize: true // Will force-update schema in production
   });
 
   console.log('Building schema...');
   const schema = await buildSchema({
-    resolvers: [`${__dirname}/resolvers/*.ts`],
+    resolvers: [RecipeResolver, UserResolver],
     container: Container,
     authChecker: Container.get(Authenticator).authChecker,
     globalMiddlewares: [interceptErrors]
@@ -39,7 +46,7 @@ export async function applyApiServerMiddleware(app: express.Express) {
     schema,
     context({ req }): Context {
       return {
-        userId: req.cookies.userId
+        userId: (req as express.Request).cookies.userId
       };
     },
     formatError(err) {

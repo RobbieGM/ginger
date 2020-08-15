@@ -1,4 +1,4 @@
-import { OperationResult } from 'urql/dist/types/types';
+import { OperationResult } from 'urql';
 import { DispatchType } from 'store/store';
 import { showSnackbar } from './actions';
 

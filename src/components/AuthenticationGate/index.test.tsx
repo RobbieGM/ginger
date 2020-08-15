@@ -8,7 +8,7 @@ import Urql from 'urql';
 import AuthenticationGate from '.';
 
 async function setup(/* content: JSX.Element = <span /> */) {
-  const client = createClient({ url: '' });
+  const client = createClient({ url: '/' });
   let renderResult: RenderResult = null as any;
   await act(async () => {
     renderResult = render(

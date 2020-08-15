@@ -8,7 +8,7 @@ import { render } from '@testing-library/react';
 import { createStoreWithClient } from '../../store/store';
 import App from '.';
 
-const apiClient = createClient({ url: '' });
+const apiClient = createClient({ url: '/' });
 const { store, persistor } = createStoreWithClient(apiClient);
 
 it('renders without crashing', () => {

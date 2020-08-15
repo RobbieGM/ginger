@@ -41,18 +41,6 @@ const recipe: RecipeType = {
   isMine: true
 };
 
-// function mockQueryResponse(mockResponse: { data: any }) {
-//   const mocked = () => {
-//     const redoQuery = () => mockResponse;
-//     console.log('mocking data as', mockResponse);
-//     return [{ fetching: false, stale: false, ...mockResponse }, redoQuery] as [
-//       UseQueryState<typeof mockResponse>,
-//       typeof redoQuery
-//     ];
-//   };
-//   jest.spyOn(Urql, 'useQuery').mockImplementation(mocked);
-// }
-
 async function setup(
   rootReducer?: (state: AppState | undefined, action: AppAction) => AppState | undefined
 ) {
@@ -88,7 +76,7 @@ it('shows all essential recipe data', async () => {
   expect(await findByText(recipe.directions[0])).toBeTruthy();
   expect(await findByText(recipe.ingredients[0])).toBeTruthy();
   expect(await findByText(recipe.servings.toString(), { exact: false })).toBeTruthy();
-});
+}, 1000);
 
 it('allows the user to bookmark the recipe', async done => {
   const { findByText, findByLabelText } = await setup(
@@ -110,19 +98,20 @@ it('allows the user to delete the recipe', async done => {
     (state = { queuedSnackbars: [], recipes: [] }, action) => {
       if (action.type === 'DELETE_RECIPE') {
         done();
+        onLine.mockRestore();
       }
       return undefined;
     }
   );
   fireEvent.click(await findByLabelText('More options'));
   fireEvent.click(await findByText('Delete'));
-  onLine.mockRestore();
 }, 1000);
 
 it('shows an error message when rating the recipe fails', async () => {
   const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined); // suppress "cannot connect" error
   const { findByLabelText, findByText } = await setup();
   fireEvent.click(await findByLabelText('4 stars'));
+  // Takes a long time to show "failed to rate"
   expect(await findByText('Failed to rate', { exact: false })).toBeTruthy();
   consoleError.mockRestore();
 });

@@ -1,5 +1,4 @@
-/* global TEST_SERVER */
-
 export default function teardownTestApiServer() {
-  // global.TEST_SERVER.close();
+  console.info('Shutting down test server');
+  global.TEST_SERVER.close();
 }
