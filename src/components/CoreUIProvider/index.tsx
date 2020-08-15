@@ -14,11 +14,11 @@ export interface ModalDialog<TButton> {
   lastButtonClass?: string;
 }
 
-interface ContextType {
+export interface CoreUIContext {
   showModalDialog: <TButton extends string>(dialog: ModalDialog<TButton>) => Promise<TButton>;
 }
 
-export const CoreUIContext = createContext({} as ContextType);
+export const CoreUIContext = createContext({} as CoreUIContext);
 
 function useDialogQueue() {
   type QueuedDialog = ModalDialog<string> & {
