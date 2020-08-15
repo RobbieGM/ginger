@@ -1,9 +1,9 @@
 import { Recipe } from 'backend/data-types/Recipe';
 import classNames from 'classnames';
-import { setBookmarkDate, deleteRecipe } from 'components/Recipe/actions';
+import { deleteRecipe, setBookmarkDate } from 'components/Recipe/actions';
 import { useEventListener, useMounted } from 'helpers';
 import React, { useRef, useState } from 'react';
-import { Bookmark, Copy, Edit2, MoreHorizontal, Share, Trash2 } from 'react-feather';
+import { Bookmark, MoreHorizontal, Share, Trash2 } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { DispatchType } from 'store/store';
 import topBarClasses from '../../../../top-bar.module.scss';
@@ -51,10 +51,6 @@ const RecipeViewMoreOptions: React.FC<Props> = ({ recipe, onDelete }) => {
             Share
           </button>
         )}
-        <button>
-          <Copy />
-          Make a copy
-        </button>
         {delayedBookmarkDate == null ? (
           <button onClick={() => dispatch(setBookmarkDate(recipe.id, Date.now()))}>
             <Bookmark />
@@ -67,21 +63,15 @@ const RecipeViewMoreOptions: React.FC<Props> = ({ recipe, onDelete }) => {
           </button>
         )}
         {recipe.isMine && (
-          <>
-            <button>
-              <Edit2 />
-              Edit
-            </button>
-            <button
-              onClick={() => {
-                dispatch(deleteRecipe(recipe.id));
-                onDelete?.();
-              }}
-            >
-              <Trash2 />
-              Delete
-            </button>
-          </>
+          <button
+            onClick={() => {
+              dispatch(deleteRecipe(recipe.id));
+              onDelete?.();
+            }}
+          >
+            <Trash2 />
+            Delete
+          </button>
         )}
       </div>
     </div>
