@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import useDeepCompareEffect from 'use-deep-compare-effect';
 import deepEqual from 'dequal';
-import { UseQueryState, CombinedError } from 'urql';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { DispatchType } from 'store/store';
+import { CombinedError, UseQueryState } from 'urql';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 import { Recipe } from '../../backend/data-types/Recipe';
 import AppState, { PartialRecipe } from '../../store/state';
 import { mergeRecipes } from './actions';

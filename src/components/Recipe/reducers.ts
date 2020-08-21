@@ -43,3 +43,12 @@ export function recipes(state: PartialRecipe[] = [], action: AppAction): Partial
       return state;
   }
 }
+
+export function lastSync(state = 0, action: AppAction): number {
+  switch (action.type) {
+    case 'SYNC':
+      return action.payload;
+    default:
+      return state;
+  }
+}

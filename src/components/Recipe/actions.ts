@@ -1,8 +1,8 @@
 import { ActionType } from 'store/store';
 import { showErrorIfPresent } from 'components/CoreUIProvider/helpers';
 import { PartialRecipe } from '../../store/state';
-import { createAction, ActionWithPayload } from '../../store/actions';
-import { SET_BOOKMARK_DATE, RATE, DELETE_RECIPE } from './queries';
+import { createAction, ActionWithPayload, Action } from '../../store/actions';
+import { SET_BOOKMARK_DATE, RATE, DELETE_RECIPE, MERGE_RECIPES } from './queries';
 
 export const mergeRecipes = (...recipes: PartialRecipe[]) => createAction('MERGE_RECIPES', recipes);
 
@@ -48,6 +48,29 @@ export const deleteRecipe = (id: string): ActionType<void> => (dispatch, getStat
   }
 };
 
+type Sync = ActionWithPayload<'SYNC', number>;
+/**
+ * Syncs the saved recipes, which may have been edited offline, to the server. Does not update
+ * recipes from the server into the redux store.
+ */
+export const syncSavedRecipesToServer = (): ActionType<void> => async (
+  dispatch,
+  getState,
+  client
+) => {
+  const state = getState();
+  const savedRecipesUpdatedSinceLastSync = state.recipes.filter(
+    recipe => recipe.bookmarkDate && recipe.lastModified && recipe.lastModified > state.lastSync
+  );
+  if (savedRecipesUpdatedSinceLastSync.length > 0) {
+    await client
+      .mutation(MERGE_RECIPES, { recipes: savedRecipesUpdatedSinceLastSync })
+      .toPromise()
+      .then(e => (e.error != null ? Promise.reject(e.error) : null));
+  }
+  dispatch({ type: 'SYNC', payload: Date.now() });
+};
+
 export const rate = (id: string, rating: number): ActionType<void> => (
   dispatch,
   getState,
@@ -60,9 +83,8 @@ export const rate = (id: string, rating: number): ActionType<void> => (
   dispatch(mergeRecipes({ id, userRating: rating }));
 };
 
-export type BasicAction = ReturnType<typeof mergeRecipes>;
-
 export type RecipeAction =
   | ReturnType<typeof mergeRecipes>
+  | Sync
   | SetBookmarkDateAction
   | DeleteRecipeAction;

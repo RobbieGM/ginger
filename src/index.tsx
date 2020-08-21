@@ -1,32 +1,19 @@
+import AuthenticationGate from 'components/AuthenticationGate';
+import HistoryProvider from 'components/HistoryProvider';
+import { syncSavedRecipesToServer } from 'components/Recipe/actions';
+import 'focus-visible';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'focus-visible';
-import './index.scss';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import AuthenticationGate from 'components/AuthenticationGate';
-import {
-  createClient,
-  Provider as ClientProvider,
-  dedupExchange,
-  cacheExchange,
-  fetchExchange,
-  Exchange
-} from 'urql';
-import HistoryProvider from 'components/HistoryProvider';
-import { createStoreWithClient } from './store/store';
-import * as serviceWorker from './serviceWorker';
+import { createClient, Provider as ClientProvider } from 'urql';
 import App from './components/App';
-
-// const noopExchange: Exchange = ({ client, forward }) => operations$ => {
-//   return forward(operations$);
-// };
+import './index.scss';
+import * as serviceWorker from './serviceWorker';
+import { createStoreWithClient } from './store/store';
 
 const apiClient = createClient({
-  url: `${window.location.protocol}//${window.location.hostname}${
-    process.env.NODE_ENV === 'development' ? ':5000' : ''
-  }/graphql`,
-  // exchanges: [noopExchange, dedupExchange, cacheExchange, fetchExchange],
+  url: process.env.REACT_APP_API_URL!,
   fetchOptions: {
     credentials: 'include'
   }
@@ -49,7 +36,16 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+let synced = false;
+// wait for hydration update, otherwise saved recipes will be empty array
+store.subscribe(() => {
+  synced = true;
+  if (!synced) {
+    store.dispatch(syncSavedRecipesToServer());
+  }
+});
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+serviceWorker.register();

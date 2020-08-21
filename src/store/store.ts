@@ -36,7 +36,7 @@ export const createStoreWithClient = (
       {
         key: 'root',
         storage,
-        whitelist: ['recipes'],
+        whitelist: ['recipes', 'lastSync'],
         transforms: [
           createTransform((stateToBeSaved, key) => {
             if (key === 'recipes') {
@@ -51,7 +51,7 @@ export const createStoreWithClient = (
       transformReducer?.(rootReducer) ?? rootReducer
     ),
     compose(
-      applyMiddleware(thunk.withExtraArgument(client)),
+      applyMiddleware<ThunkDispatch<AppState, Client, AppAction>>(thunk.withExtraArgument(client)),
       window.__REDUX_DEVTOOLS_EXTENSION__
         ? window.__REDUX_DEVTOOLS_EXTENSION__({ trace: true })
         : (x: any) => x

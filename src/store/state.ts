@@ -11,4 +11,5 @@ export default interface AppState {
   // savedRecipes: Recipe[];
   queuedSnackbars: Snackbar[];
   recipes: PartialRecipe[];
+  lastSync: number;
 }

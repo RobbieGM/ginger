@@ -1,12 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { HistoryContext } from 'components/HistoryProvider';
+import { syncSavedRecipesToServer } from 'components/Recipe/actions';
+import RecipeView from 'components/Recipe/View';
 import TabSwitcher from 'components/TabSwitcher';
 import { animatable as withAnimation, useMounted } from 'helpers';
 import { History } from 'history';
-import RecipeView from 'components/Recipe/View';
-import { HistoryContext } from 'components/HistoryProvider';
-import classes from './style.module.scss';
+import React, { useContext, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { DispatchType } from 'store/store';
 import CoreUIProvider from '../CoreUIProvider';
 import { touchEnd, touchStart } from './instant-touch';
+import classes from './style.module.scss';
 
 const AnimatableRecipeView = withAnimation(
   RecipeView,
@@ -26,6 +29,7 @@ function useLocation(browserHistory: History) {
 }
 
 const App: React.FC<{}> = () => {
+  const dispatch = useDispatch<DispatchType>();
   const browserHistory = useContext(HistoryContext);
   const loc = useLocation(browserHistory);
   const path = loc.pathname.split('/').slice(1);
@@ -33,6 +37,11 @@ const App: React.FC<{}> = () => {
   const tabSwitcherVisible = useMounted(!recipeId, 300);
   const hideRecipeView = () =>
     browserHistory.canGoBackWithoutLeaving() ? history.back() : history.replaceState({}, '', '/');
+  useEffect(() => {
+    if (navigator.onLine) {
+      dispatch(syncSavedRecipesToServer());
+    }
+  }, [dispatch]);
   return (
     <div id='app' onTouchStart={touchStart} onTouchEnd={touchEnd} onTouchCancel={touchEnd}>
       <CoreUIProvider>

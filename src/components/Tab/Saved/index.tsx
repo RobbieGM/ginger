@@ -16,11 +16,9 @@ const SavedTab: React.FC = () => {
     savedRecipes.map(recipe => recipe.id),
     RECIPE_PREVIEW_FIELDS
   );
-  const recipes = navigator.onLine
-    ? onlineRecipes
-    : savedRecipes.filter((recipe): recipe is RecipePreview =>
-        recipeHasFields(recipe, RECIPE_PREVIEW_FIELDS)
-      );
+  const recipes =
+    navigator.onLine && error == null ? onlineRecipes : (savedRecipes as RecipePreview[]);
+  // assume every recipe with bookmarkDate has all other fields
   const sortedRecipes = recipes?.sort((a, b) => b.bookmarkDate! - a.bookmarkDate!);
 
   return (

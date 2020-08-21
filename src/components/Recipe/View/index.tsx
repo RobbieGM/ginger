@@ -3,15 +3,16 @@ import Rating from 'components/Rating';
 import { useEventListener, useMemory } from 'helpers';
 import React, { useContext, useRef, useState } from 'react';
 import { ArrowLeft, Eye, Lock } from 'react-feather';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import AppState from 'store/state';
 import { DispatchType } from 'store/store';
 import { ReactComponent as Loading } from '../../../assets/loading.svg';
 import topBarClasses from '../../../top-bar.module.scss';
 import { rate } from '../actions';
+import { useMergedRecipesQuery } from '../helpers';
 import { useRecipesQuery } from '../queries';
 import RecipeViewMoreOptions from './MoreOptions';
 import classes from './style.module.scss';
-import { useMergedRecipesQuery } from '../helpers';
 
 interface Props {
   recipeId: string;
@@ -58,7 +59,11 @@ const RecipeView: React.FC<Props> = ({ recipeId, hide }) => {
     ),
     x => x
   );
-  const recipe = useMemory(recipes?.[0]); // useMemory to avoid insta-disappearing data on delete
+  type ReturnedRecipe = NonNullable<typeof recipes>[number];
+  const savedRecipe = useSelector((state: AppState) =>
+    state.recipes.find(recipe => recipe.id === recipeId && recipe.bookmarkDate != null)
+  );
+  const recipe = useMemory(navigator.onLine ? recipes?.[0] : (savedRecipe as ReturnedRecipe)); // useMemory to avoid insta-disappearing data on delete
   const { goBack } = useContext(HistoryContext);
   useEventListener(window, 'resize', () => {
     updateCurrentList();
@@ -76,7 +81,7 @@ const RecipeView: React.FC<Props> = ({ recipeId, hide }) => {
         {recipe && <RecipeViewMoreOptions recipe={recipe} onDelete={hide} />}
       </div>
       <div className={classes.main}>
-        {recipe && (
+        {recipe ? (
           <>
             <h1>
               {recipe.name}
@@ -139,9 +144,11 @@ const RecipeView: React.FC<Props> = ({ recipeId, hide }) => {
               </div>
             </div>
           </>
-        )}
-        {loading && <Loading className={classes.loading} />}
-        {error && <>An error occurred when loading this recipe.</>}
+        ) : loading ? (
+          <Loading className={classes.loading} />
+        ) : error ? (
+          <>An error occurred when loading this recipe.</>
+        ) : null}
       </div>
     </div>
   );

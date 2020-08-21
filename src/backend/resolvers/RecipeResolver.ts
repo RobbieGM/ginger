@@ -105,7 +105,19 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       }
     });
 
-    const save = (recipe: DeepPartial<Recipe>) => this.manager.save(Recipe, recipe);
+    const save = async (recipe: DeepPartial<Recipe> & { id: Recipe['id'] }) => {
+      const promises: Promise<any>[] = [this.manager.save(Recipe, recipe)];
+      if (recipe.bookmarkDate) {
+        promises.push(
+          this.manager.save(Bookmark, {
+            recipe,
+            user: { id: ctx.userId },
+            date: recipe.bookmarkDate
+          })
+        );
+      }
+      return Promise.all(promises);
+    };
     await Promise.all(editedRecipes.map(save));
     const recipeIdExists = (id: string) => allConflictingRecipes.map(r => r.id).includes(id);
     const createdRecipes = recipes.filter(recipe => !recipeIdExists(recipe.id));

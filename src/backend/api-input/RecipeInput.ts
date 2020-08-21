@@ -18,6 +18,9 @@ export class RecipeInput implements Partial<Recipe> {
   @Field()
   prepTime: number;
 
+  @Field({ nullable: true })
+  bookmarkDate?: number;
+
   @Field()
   cookTime: number;
 

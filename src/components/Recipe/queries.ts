@@ -9,6 +9,14 @@ export const CREATE_RECIPE = `
   }
 `;
 
+export const MERGE_RECIPES = `
+  mutation MergeRecipes($recipes: [RecipeInput!]!) {
+    mergeRecipes(recipes: $recipes) {
+      id
+    }
+  }
+`;
+
 export const DELETE_RECIPE = `
   mutation DeleteRecipe($recipeId: String!) {
     delete(recipeId: $recipeId) {
