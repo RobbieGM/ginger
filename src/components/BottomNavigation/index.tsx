@@ -6,7 +6,7 @@ import classes from './style.module.scss';
 export interface Tab {
   label: string;
   icon: Icon;
-  component: JSX.Element;
+  component: React.FC;
 }
 
 interface Props {

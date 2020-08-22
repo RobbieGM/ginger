@@ -1,31 +1,32 @@
-import NewTab from 'components/Tab/New';
-import SearchTab from 'components/Tab/Search';
-import React, { useState } from 'react';
-import { Award, Bookmark, BookOpen, Search, TrendingUp, Globe } from 'react-feather';
+import React, { createElement, lazy, Suspense, useState } from 'react';
+import { Bookmark, BookOpen, Globe, Search } from 'react-feather';
 import BottomNavigation, { Tab } from '../BottomNavigation';
 import MyRecipesTab from '../Tab/MyRecipes';
-import SavedTab from '../Tab/Saved';
+
+const SavedTab = lazy(() => import('../Tab/Saved'));
+const NewTab = lazy(() => import('../Tab/New'));
+const SearchTab = lazy(() => import('../Tab/Search'));
 
 const tabs: Tab[] = [
   {
     label: 'My Recipes',
     icon: BookOpen,
-    component: <MyRecipesTab />
+    component: MyRecipesTab
   },
   {
     label: 'Saved',
     icon: Bookmark,
-    component: <SavedTab />
+    component: SavedTab
   },
   {
     label: 'Public',
     icon: Globe,
-    component: <NewTab />
+    component: NewTab
   },
   {
     label: 'Search',
     icon: Search,
-    component: <SearchTab />
+    component: SearchTab
   }
 ];
 
@@ -33,7 +34,7 @@ const TabSwitcher: React.FC = () => {
   const [tab, setTab] = useState(0);
   return (
     <>
-      {tabs[tab].component}
+      <Suspense fallback={null}>{createElement(tabs[tab].component)}</Suspense>
       <BottomNavigation tabs={tabs} selectedTabIndex={tab} setTab={setTab} />
     </>
   );
