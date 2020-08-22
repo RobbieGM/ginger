@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { BookOpen, TrendingUp, Award, Bookmark, Search } from 'react-feather';
+import NewTab from 'components/Tab/New';
 import SearchTab from 'components/Tab/Search';
-import PopularTab from '../Tab/Popular';
+import React, { useState } from 'react';
+import { Award, Bookmark, BookOpen, Search, TrendingUp } from 'react-feather';
 import BottomNavigation, { Tab } from '../BottomNavigation';
-import SavedTab from '../Tab/Saved';
 import MyRecipesTab from '../Tab/MyRecipes';
+import PopularTab from '../Tab/Popular';
+import SavedTab from '../Tab/Saved';
 
 const tabs: Tab[] = [
   {
@@ -25,7 +26,7 @@ const tabs: Tab[] = [
   {
     label: 'New',
     icon: Award,
-    component: <SavedTab />
+    component: <NewTab />
   },
   {
     label: 'Search',

@@ -21,6 +21,12 @@ import { Context } from '../Context';
 import { Bookmark } from '../data-types/Bookmark';
 import { Rating } from '../data-types/Rating';
 
+function makeInfiniteRecipeScrollResult<T>(results: T[], limit: number) {
+  const canLoadMore = results.length === limit + 1;
+  const cappedResults = canLoadMore ? results.slice(0, -1) : results;
+  return { results: cappedResults, canLoadMore };
+}
+
 @Service()
 @Resolver(of => Recipe)
 export class RecipeResolver implements ResolverInterface<Recipe> {
@@ -52,9 +58,22 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       take: limit + 1,
       skip
     });
-    const canLoadMore = results.length === limit + 1;
-    if (canLoadMore) results.pop();
-    return { results, canLoadMore };
+    return makeInfiniteRecipeScrollResult(results, limit);
+  }
+
+  @Query(returns => InfiniteRecipeScrollResult)
+  async newRecipes(
+    @Arg('skip', type => Int) skip: number,
+    @Arg('results', type => Int) limit: number
+  ) {
+    const results = await this.manager.find(Recipe, {
+      order: {
+        lastModified: 'DESC'
+      },
+      take: limit + 1,
+      skip
+    });
+    return makeInfiniteRecipeScrollResult(results, limit);
   }
 
   @Query(returns => InfiniteRecipeScrollResult)
@@ -70,9 +89,7 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
       `select * from "recipe" where name @@ $1 and ("userId" = $2 or not "isPrivate") order by ts_rank(to_tsvector('english', name), plainto_tsquery('english', $3)) desc limit $4 offset $5`,
       [query, ctx.userId, query, limit + 1, skip]
     );
-    const canLoadMore = results.length === limit + 1;
-    if (canLoadMore) results.pop();
-    return { results, canLoadMore };
+    return makeInfiniteRecipeScrollResult(results, limit);
   }
 
   @Authorized()
