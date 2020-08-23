@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import { GeneratingSchemaError } from 'type-graphql';
-import { applyApiServerMiddleware } from './api-middleware';
+import { applyApiServerMiddleware } from '../backend/api-middleware';
 
 const app = express();
 dotenv.config();

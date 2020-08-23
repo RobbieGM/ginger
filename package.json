@@ -99,7 +99,7 @@
     "frontend-dev": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "backend-dev": "ts-node --project server-tsconfig.json src/backend/api-server.ts"
+    "backend-dev": "ts-node --project server-tsconfig.json src/api/main.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
