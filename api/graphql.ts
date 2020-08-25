@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import 'reflect-metadata';
 import { MiddlewareFn, buildSchema } from 'type-graphql';
 import Container from 'typedi';
-import { createConnection, useContainer } from 'typeorm';
+import { createConnection, useContainer, Connection, getConnection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-micro';
 import { Authenticator } from '../src/backend/AuthChecker';
 import { Context } from '../src/backend/Context';
@@ -31,12 +31,14 @@ export default async function(req: NowRequest, res: NowResponse) {
   }
   const url =
     process.env.NODE_ENV === 'test' ? process.env!.TEST_DATABASE_URL : process.env!.DATABASE_URL;
-  await createConnection({
-    type: 'postgres',
-    url,
-    entities: [Bookmark, InfiniteRecipeScrollResult, Rating, Recipe, User],
-    synchronize: true // Will force-update schema in production
-  });
+  if (getConnection() == null) {
+    await createConnection({
+      type: 'postgres',
+      url,
+      entities: [Bookmark, InfiniteRecipeScrollResult, Rating, Recipe, User],
+      synchronize: true // Will force-update schema in production
+    });
+  }
 
   const schema = await buildSchema({
     resolvers: [RecipeResolver, UserResolver],
