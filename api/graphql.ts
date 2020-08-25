@@ -31,7 +31,10 @@ export default async function(req: NowRequest, res: NowResponse) {
   }
   const url =
     process.env.NODE_ENV === 'test' ? process.env!.TEST_DATABASE_URL : process.env!.DATABASE_URL;
-  if (getConnection() == null) {
+  try {
+    // throws when no connection exists
+    getConnection();
+  } catch {
     await createConnection({
       type: 'postgres',
       url,
