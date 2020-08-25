@@ -9,12 +9,6 @@ type ShareData = {
 };
 
 declare global {
-  namespace NodeJS {
-    interface Global {
-      TEST_SERVER: Server;
-    }
-  }
-
   interface Navigator {
     share?: (data?: ShareData) => Promise<void>;
     canShare?: (data?: ShareData) => boolean;
