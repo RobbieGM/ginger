@@ -1,6 +1,6 @@
 # Ginger
 
-A simple offline-supported recipe manager to learn React, Redux, GraphQL, TypeORM, and testing.
+A simple offline-capable recipe manager to learn React, Redux, GraphQL, TypeORM, and testing. Available live at https://ginger-robbiegm.vercel.app/
 
 ## Setup
 
